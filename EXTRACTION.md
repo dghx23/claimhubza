@@ -32,3 +32,8 @@ The original `app.py` was not copied: it contains unrelated Sentrix, RiskAtlas, 
 5. Publish to `dghx23/claimhubza` and preserve selected file history when GitHub connectivity permits. The source is a partial clone; `git-filter-repo` failed on a missing historic blob, and direct GitHub access failed DNS resolution. This checkout records the exact source commit as provenance.
 
 Deployment state: **not deployed**. DNS and the existing monolith routes have not been changed, so the current live setup remains the rollback.
+
+
+## 2026-09-30 standalone completion pass
+
+The standalone repository now also contains the previously missing claimant runtime dependencies and modules: occupation lookup, medical-record synchronisation, rejection processing/explainer, evidence-gap and disability-definition logic, insurer/NFO guidance, clinician lookup helpers, the remaining ClaimBuddy workspace templates, and supporting browser scripts. `claimbuddy_runtime.py` owns the extracted claimant routes while `blueprints/claimhub_bp.py` owns professional ClaimHub access. GitHub Actions now runs standalone public-host and full-runtime smoke tests; the latest completed suite is green. A dedicated Railway service has been created, with the existing monolith retained as rollback while deployment/domain validation completes.
