@@ -69,7 +69,7 @@ def test_claimhub_invitation_round_trip(tmp_path, monkeypatch):
     body = response.get_data(as_text=True)
     marker = "/claimhub/access/"
     assert marker in body
-    token = body.split(marker, 1)[1].split('"', 1)[0].split("&", 1)[0]
+    token = body.split(marker, 1)[1].split("<", 1)[0].split("&", 1)[0].strip()
     assert token
 
     professional = app.test_client()
