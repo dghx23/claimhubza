@@ -547,6 +547,10 @@ def register_claimbuddy_routes(app) -> None:
 
     @app.route("/documents/<int:doc_id>/delete", methods=["POST"])
     def delete_document(doc_id: int):
+        with db.get_connection() as conn:
+            row = conn.execute("SELECT claim_id FROM documents WHERE id = ?", (doc_id,)).fetchone()
+        if not row or int(row["claim_id"]) not in session.get("owned_claim_ids", []):
+            abort(404)
         doc = db.delete_document(doc_id)
         if not doc:
             abort(404)
