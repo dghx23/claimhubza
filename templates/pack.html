@@ -1,0 +1,25 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}Claim pack{% endblock %}
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/compiler.css') }}">
+{% endblock %}
+{% block content %}
+{% set active = 'pack' %}
+{% include '_workspace_nav.html' %}
+{% set module_kicker = 'Review-ready output' %}
+{% set module_title = 'My claim pack' %}
+{% set module_description = 'Bring the chronology, policy issues, functional evidence, open gaps and draft requests together in one pack for review.' %}
+{% include 'claimbuddy/_module_header.html' %}
+
+<div class="compiler-actions">
+  <a href="{{ url_for('pack_download', claim_id=claim.id) }}" class="btn btn-primary">Download .md</a>
+  <a href="{{ url_for('letters', claim_id=claim.id) }}" class="btn btn-secondary">Draft letters</a>
+  <a href="{{ url_for('doctor', claim_id=claim.id) }}" class="btn btn-secondary">Doctor questionnaire</a>
+  <a href="{{ url_for('dashboard', claim_id=claim.id) }}" class="btn btn-secondary">Back to the File</a>
+</div>
+
+<div class="ac-panel">
+  <h2 style="margin-top:0;">Claim pack (draft — review before sending)</h2>
+  <div class="letter-box" style="max-height:none;">{{ pack_content }}</div>
+</div>
+{% endblock %}
