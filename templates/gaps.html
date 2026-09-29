@@ -1,0 +1,38 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}Evidence gaps{% endblock %}
+{% block content %}
+{% set active = 'gaps' %}
+{% include '_workspace_nav.html' %}
+{% set module_kicker = 'Evidence readiness' %}
+{% set module_title = 'Evidence gaps' %}
+{% set module_description = 'See what is missing, who holds it, why it matters and what to request next for your current claim stage.' %}
+{% include 'claimbuddy/_module_header.html' %}
+
+<section class="ac-panel">
+  <div class="cb-panel-title">
+    <div><p class="cb-kicker">Current ruleset</p><h2>{{ gaps|length }} open evidence gap{{ '' if gaps|length == 1 else 's' }}</h2></div>
+    <a href="{{ url_for('letters', claim_id=claim.id) }}" class="ac-btn">Draft record requests</a>
+  </div>
+
+  {% if gaps %}
+  <div class="cb-gap-grid">
+    {% for g in gaps %}
+    <article class="cb-gap-card cb-gap-{{ g.urgency }}">
+      <div class="cb-gap-top">
+        <span class="ac-badge ac-badge--{{ g.urgency }}">{{ g.urgency }}</span>
+        <span>{{ g.holder }}</span>
+      </div>
+      <h3>{{ g.item }}</h3>
+      <p>{{ g.reason }}</p>
+      <div class="cb-gap-action"><strong>Next action</strong><span>{{ g.request }}</span></div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="cb-success-state">
+    <span>✓</span>
+    <div><strong>No open gaps from the current ruleset.</strong><p>Keep the profile and document vault current if new evidence arrives.</p></div>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
