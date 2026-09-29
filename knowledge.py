@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from content_data import (  # noqa: E402
     CONSTRUCTION_FIELDS_TABLE,
     CORE_POLICY_TERMS,
