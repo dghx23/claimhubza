@@ -1,0 +1,36 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}Draft letters{% endblock %}
+{% block content %}
+{% set active = 'letters' %}
+{% include '_workspace_nav.html' %}
+{% set module_kicker = 'Drafting support' %}
+{% set module_title = 'Letters & record requests' %}
+{% set module_description = 'Prepare editable requests for employer records, insurer records and internal review. You approve every draft before it is sent.' %}
+{% include 'claimbuddy/_module_header.html' %}
+
+<div class="ac-disclaimer">Review and edit every letter before sending. {{ claim_juris.disclaimer }}</div>
+<p class="compiler-quiet">{{ claim_juris.name }} · {{ claim_juris.privacy_access }} · {{ claim_juris.idr_label }} then {{ claim_juris.complaint_body }}.</p>
+
+<div class="ac-panel">
+  <h2>Employer record request</h2>
+  <div class="letter-box">{{ employer_letter }}</div>
+</div>
+
+<div class="ac-panel">
+  <h2>Insurer record request</h2>
+  <div class="letter-box">{{ insurer_letter }}</div>
+</div>
+
+{% if trustee_letter %}
+<div class="ac-panel">
+  <h2>Super trustee record request</h2>
+  <p class="compiler-quiet">Cover inside super has two brains. Send this as well as the insurer letter.</p>
+  <div class="letter-box">{{ trustee_letter }}</div>
+</div>
+{% endif %}
+
+<div class="ac-panel">
+  <h2>{{ claim_juris.idr_label }} request</h2>
+  <div class="letter-box">{{ review_letter }}</div>
+</div>
+{% endblock %}
