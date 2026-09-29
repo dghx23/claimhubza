@@ -1,0 +1,64 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}Questions for my clinician — ClaimBuddy{% endblock %}
+{% block content %}
+{% set active = 'doctor' %}
+{% include '_workspace_nav.html' %}
+{% set module_kicker = 'Clinical evidence' %}
+{% set module_title = 'Questions for my clinician' %}
+{% set module_description = 'Help your treating practitioner connect medical facts to functional limitations and the material duties of your occupation.' %}
+{% include 'claimbuddy/_module_header.html' %}
+
+<div class="ac-panel" style="margin-bottom:1.25rem;">
+  <h2>Clinician questionnaire</h2>
+  <p class="ac-meta">
+    Ten standard questions to help your treating practitioner connect medical facts to
+    <strong>{{ claim.occupation or 'your occupation' }}</strong> and material duties.
+    Review with your doctor — do not send automatically.
+    <a href="{{ url_for('resources_glossary') }}">Glossary</a> has full explanations; hover question titles for a quick
+    summary.
+  </p>
+</div>
+
+<section class="ac-panel doctor-question-card">
+  <div class="cb-panel-title">
+    <div><p class="cb-kicker">For discussion with your treating practitioner</p><h2>Clinical questions</h2></div>
+    <span>{{ doctor_questions|length }} questions</span>
+  </div>
+  <div class="cb-question-list">
+    {% for q in doctor_questions %}
+    <article class="cb-question-card">
+      <span class="cb-question-num">{{ q.index }}</span>
+      <div>
+        <a href="{{ url_for('resources_glossary_detail', slug=q.slug) }}" class="cb-question-title has-term-tip"
+           data-term-tip="{{ q.hover_tip }}" data-term-tip-href="{{ url_for('resources_glossary_detail', slug=q.slug) }}">{{ q.question }}</a>
+        <p>{{ q.purpose }}</p>
+        <div class="cb-question-links">
+          <a href="{{ url_for('resources_glossary_detail', slug=q.slug) }}">Why this matters</a>
+          {% for link in q.language_links[:2] %}<a href="{{ url_for('resources_language_term', slug=link.slug) }}">{{ link.label }}</a>{% endfor %}
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  <p class="ac-meta" style="margin-top:12px;">Review these with your clinician. ClaimBuddy does not tell a clinician what medical opinion to give.</p>
+</section>
+
+{% if claim.material_duties %}
+<div class="ac-panel" style="margin-top:1.25rem;">
+  <h2>Your material duties (from profile)</h2>
+  <p>{{ claim.material_duties }}</p>
+</div>
+{% else %}
+<div class="ac-panel" style="margin-top:1.25rem; background:var(--bg-inset); border-color:var(--rule);">
+  <p class="ac-meta" style="margin:0;">
+    Add <strong>material duties</strong> in your claim profile so your doctor can map impairment to actual work tasks.
+    <a href="{{ url_for('edit_claim', claim_id=claim.id) }}" class="ac-btn"
+      style="margin-left:0.6rem; vertical-align:middle;">Edit profile →</a>
+  </p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/term-tooltips.js') }}" defer></script>
+{% endblock %}
