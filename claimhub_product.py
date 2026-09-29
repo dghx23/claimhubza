@@ -193,8 +193,8 @@ PRODUCT_SURFACES = [
 INTERNAL_LAYERS = [
     {
         "id": "riskatlas",
-        "label": "RiskAtlas / Core ZA",
-        "purpose": "Reference intelligence for policy, clinical, occupational, regulatory and dispute context.",
+        "label": "RiskAtlas",
+        "purpose": "Separate wider reference product; linked when relevant, without owning ClaimHub claims guidance or case data.",
     },
     {
         "id": "sentrix",
@@ -214,8 +214,8 @@ PRODUCT_PRINCIPLES = {
     "access": (
         "Professional participation is bounded by case membership, role capability, claimant-authorised scope and explicit document sharing."
     ),
-    "riskatlas": (
-        "RiskAtlas supplies the policy, clinical, occupational, insurer and dispute intelligence used by ClaimHub Resources, ClaimBuddy and ClaimHub."
+    "claims_knowledge": (
+        "ClaimHub Resources brings claims guidance on policy wording, evidence, function, insurers and disputes alongside the shared case. Separate clinical and public-support products are linked where relevant."
     ),
     "sentrix": (
         "Sentrix Digital builds and operates RiskAtlas, ClaimHub and ClaimBuddy."

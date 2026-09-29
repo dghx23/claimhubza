@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ClaimHub South Africa — clearer income protection claims</title>
-  <meta name="description" content="ClaimHub brings claimants and authorised professionals together around one shared income-protection claim record, with ClaimBuddy for claimants and trusted resources powered by RiskAtlas.">
+  <meta name="description" content="ClaimHub brings claimants and authorised professionals together around one shared income-protection claim record, with ClaimBuddy for claimants and ClaimHub Resources for claims guidance.">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/claimsite.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/claimhub-system.css') }}">
 </head>
@@ -19,7 +19,7 @@
       <a href="#connected">How it works</a>
       <a href="{{ url_for('claimsite_resources') }}">Resources</a>
       <a href="#audiences">Who it’s for</a>
-      <a href="#riskatlas">RiskAtlas</a>
+      <a href="#knowledge">Claims knowledge</a>
       <a href="#sentrix">About</a>
       <a class="cs-nav-primary" href="{{ url_for('inbox') }}">Start a claim</a>
     </nav>
@@ -100,7 +100,7 @@
       <div class="chm-market-thesis">
         <span>ClaimHub’s role</span>
         <strong>Turn a fragmented multi-party process into one coordinated claim record.</strong>
-        <p>ClaimBuddy gives the claimant a dedicated experience. ClaimHub gives authorised professionals the view they need. ClaimHub Resources and RiskAtlas provide the knowledge layer around the case.</p>
+        <p>ClaimBuddy gives the claimant a dedicated experience. ClaimHub gives authorised professionals the view they need. ClaimHub Resources provides claims guidance around the case, with links to separate clinical and public-support references where relevant.</p>
       </div>
     </section>
 
@@ -210,7 +210,7 @@
         <div>
           <p class="chm-kicker">04 · Knowledge when it matters</p>
           <h2>ClaimHub Resources helps people understand the claim.</h2>
-          <p>Guides, tools, definitions and trusted references sit alongside the live case so people can make sense of what the policy asks for and what evidence may be needed.</p>
+          <p>Guides, tools, definitions and trusted references sit alongside the live case so people can make sense of what the policy asks for and what evidence may be needed. Some detailed guides currently open on a linked reference site.</p>
         </div>
         <a class="chm-btn secondary" href="{{ url_for('claimsite_resources') }}">Browse all resources →</a>
       </div>
@@ -226,10 +226,10 @@
       </div>
     </section>
 
-    <section class="chm-section chm-riskatlas" id="riskatlas">
+    <section class="chm-section chm-riskatlas" id="knowledge">
       <div class="chm-riskatlas-brand">
         <span class="chm-risk-mark">●◌●</span>
-        <div><p class="chm-kicker">05 · Reference intelligence</p><h2>Powered by RiskAtlas.</h2><p>{{ product_model.principles.riskatlas }}</p></div>
+        <div><p class="chm-kicker">05 · Claims knowledge</p><h2>Guidance belongs with the claim.</h2><p>{{ product_model.principles.claims_knowledge }}</p></div>
       </div>
       <div class="chm-risk-grid">
         <div><span>▤</span><strong>Policy & insurer</strong><small>Definitions, structures and reference context.</small></div>
@@ -270,7 +270,7 @@
 
     <section class="chm-sentrix" id="sentrix">
       <div class="chm-sentrix-brand"><span>◇</span><div><strong>Sentrix<span>Digital</span></strong><small>Technology. Knowledge. Impact.</small></div></div>
-      <div class="chm-sentrix-copy"><strong>Built and operated by Sentrix Digital.</strong><p>{{ product_model.principles.sentrix }} RiskAtlas supplies the intelligence layer; ClaimHub owns the live claims-coordination experience.</p></div>
+      <div class="chm-sentrix-copy"><strong>Built and operated by Sentrix Digital.</strong><p>ClaimHub Resources provides claims guidance alongside the live case.</p></div>
       <div class="chm-sentrix-tag">Technology for people.<br>Outcomes for good.</div>
     </section>
 

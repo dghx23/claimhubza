@@ -1,4 +1,4 @@
-# ClaimHub / RiskAtlas platform boundary
+# ClaimHub product and reference boundaries
 
 ## Product roles
 
@@ -8,7 +8,9 @@
 
 **ClaimBuddy** is the claimant-facing experience inside the ClaimHub product family. Claimants organise their own evidence, timeline, functional impact, policy requirements, evidence gaps and claim pack. Public treatment: **ClaimBuddy — by claimhub.co.za**.
 
-**RiskAtlas** is shared reference intelligence. It supplies country cores, clinical knowledge, occupations, terminology, insurer/scheme directories, policy/dispute pathways and social-security reference data. RiskAtlas does not own live multi-party claim collaboration.
+**ClaimHub Resources** is the claims knowledge surface for policy wording, evidence, functional impact, insurers and disputes. It belongs to the ClaimHub product family alongside ClaimBuddy and the professional portal.
+
+**RiskAtlas** is a separate, broader South African reference product. ClaimHub may link to it, ClinicalAtlas or Compass for relevant outside context. Those products do not own ClaimHub's claims guidance or live case record.
 
 ## Case boundary
 
@@ -34,7 +36,7 @@ Claimants and case administrators manage the case boundary. Clinicians, employer
 
 ## Repository direction
 
-ClaimHub should deploy as its own standalone public product surface at claimhub.co.za. SentrixDigital remains the portfolio/informational site and internal backend environment. RiskAtlas should progressively become the source/reference package or service consumed by ClaimHub/Sentrix services rather than a second independently evolving copy of the product application.
+ClaimHub should deploy as its own standalone public product surface at claimhub.co.za. SentrixDigital remains the portfolio/informational site and internal backend environment. Move claim-specific guidance and its detail pages into this repository. Keep separate reference products available through clearly labelled outbound links.
 
 Do not remove duplicated runtime code in a single destructive migration. Move shared reference modules in controlled slices, add tests at each boundary, and keep imports backwards-compatible until consumers have moved.
 
@@ -66,7 +68,7 @@ The public web architecture is intentionally split:
 - **claimhub.co.za** — standalone ClaimHub marketing front door explaining the cover context, initiation paths, product family and resources.
 - **ClaimBuddy** — claimant-facing application branded **ClaimBuddy — by claimhub.co.za**. It is the claimant view of the shared case.
 - **ClaimHub professional portal** — role-specific clinician, employer/HR, adviser and claims-team workspaces around that same case.
-- **RiskAtlas / Core ZA** — reference/intelligence layer that remains separate from live collaboration and is consumed by ClaimBuddy/ClaimHub at runtime.
+- **ClaimHub Resources** — claims guidance within the ClaimHub product family; links to separate reference products when useful.
 
 The Sentrix site may link to ClaimHub and explain how it works, but ClaimHub should not inherit Sentrix's public visual shell.
 
@@ -80,7 +82,7 @@ The ClaimHub family now has three deliberately connected surfaces:
 - **ClaimHub (`/claimhub/...`):** professional role workspaces connected to claimant-authorised access.
 - **Sentrix backend (`/backend/claimhub`):** authenticated operational/control-room view over claims, documents, memberships, invitations, requests and product links.
 
-The public marketing site does not own case state. ClaimBuddy and ClaimHub operate over the same backend case model. Sentrix retains the internal operational and architecture view, while RiskAtlas/Core remain the reference/intelligence sources consumed by the product.
+The public marketing site does not own case state. ClaimBuddy and ClaimHub operate over the same backend case model. ClaimHub Resources owns claims guidance. Separate products can supply optional reference context through links.
 
 
 ## Multi-party case initiation
@@ -104,7 +106,7 @@ The canonical presentation model lives in `claimhub_product.py` and is intention
 4. **Connected products:** ClaimBuddy is the claimant workspace; ClaimHub is the professional workspace layer.
 5. **Resources:** workflow, policy terms, language, evidence gaps, disability definitions, ClinicalAtlas and NFO/ombud material explain the reference context behind the case.
 6. **Product surfaces:** claimhub.co.za marketing front door → ClaimBuddy claimant application / ClaimHub professional portal.
-7. **Internal layer:** Sentrix backend is the operational/control-room surface; RiskAtlas/Core ZA is reference intelligence.
+7. **Organisation and links:** Sentrix Digital is the builder/operator; separate products such as RiskAtlas can be linked for broader reference context.
 
 The data boundary remains important: the marketing site owns no live claim state, RiskAtlas owns no live collaboration state, and ClaimBuddy/ClaimHub are different authorised views over the same live case model.
 
@@ -131,7 +133,11 @@ The seven canonical poster sections are:
 3. claim initiation paths;
 4. one shared case / ClaimBuddy + ClaimHub;
 5. ClaimHub Resources;
-6. RiskAtlas intelligence;
+6. ClaimHub claims knowledge;
 7. Sentrix Digital builder/operator layer.
 
 When a public section changes materially, update its `TECHNICAL_REFERENCE_MAP` entry in the same change. The broader ingestion topology remains in `templates/backend/architecture.html`; the technical map is the product-facing cross-reference layer.
+
+## Standalone migration state
+
+The standalone service owns the ClaimHub Resources landing page. Several `/claims/resources/...` detail routes still redirect to legacy RiskAtlas pages while their content is being migrated. This is a temporary delivery dependency, not a statement that RiskAtlas owns the claims knowledge layer. Do not remove those redirects until the corresponding local pages work and their links are verified.

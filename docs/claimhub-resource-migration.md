@@ -1,62 +1,13 @@
 # ClaimHub resource migration
 
-## Public ownership
+## Product boundary
 
-The mature reference guides and tools that were previously presented through the RiskAtlas application shell are now public ClaimHub resources.
+ClaimHub Resources owns the claims knowledge experience: policy wording, claim stages, evidence gaps, functional impact, insurer context and dispute guidance. ClaimBuddy applies that guidance in the claimant workspace, while the ClaimHub professional portal uses the same case record. Separate products such as ClinicalAtlas, Compass and RiskAtlas may be linked for wider reference context.
 
-Canonical public entry point:
+## Current standalone state
 
-- `/claims/resources`
+The standalone repository serves the public ClaimHub Resources landing page at `/claims/resources`. It also carries several claim-related knowledge modules and assets. Some detail paths under `/claims/resources/...` currently redirect to legacy pages on `riskatlas.co.za`; they have not yet been migrated into local ClaimHub routes. Treat these as transitional outbound links. The standalone repo does not contain the monolith's full `templates/resources/` tree.
 
-Canonical detail paths are also available under `/claims/resources/...` for workflow, glossary, language map, policy terms, policy traps, evidence gaps, disability definitions, life insurers, NFO material, ombud guidance, news, wiki, medical-scheme reference, medicine schedules and related detail pages.
+Before either public domain is cut over, migrate or explicitly label those detail links, verify the destination and content of every resource card, and test that claim-specific guides stay within the intended ClaimHub experience. Keep separate clinical and social-support links clearly identified as external references.
 
-Legacy `/resources/...` URLs remain available for backwards compatibility. The old `/resources` and `/reference` catalogue entry points redirect to ClaimHub Resources.
-
-## What moved vs what remains a source layer
-
-The public presentation and navigation ownership moved to ClaimHub. The underlying mature reference engines already existed in SentrixDigital and were checked against the RiskAtlas implementation before this migration.
-
-The following reference modules are present in SentrixDigital and feed ClaimHub/ClaimBuddy:
-
-- `knowledge.py`
-- `language_map.py`
-- `evidence_gaps.py`
-- `disability_definitions.py`
-- `life_insurers.py`
-- `nfosa_dispute.py`
-- `ombud_guidance.py`
-- `news_articles.py`
-- `library_wiki.py`
-- `clinical_atlas.py`
-- `clinical_atlas_clinicians.py`
-- `clinical_atlas_medical_aids.py`
-- `medicine_schedules.py`
-- `sa_reference_data.py`
-- `engine.py`
-
-Core reference modules compared during the migration were either identical to RiskAtlas or SentrixDigital already contained the newer local version. This avoids copying an older RiskAtlas application shell over the newer ClaimHub branch.
-
-RiskAtlas/Core remains the reference-intelligence boundary: authority feeds, curated datasets and reusable knowledge logic can continue to be maintained there or progressively exposed as reusable interfaces. It no longer owns the public claims-resource experience.
-
-## Visual shell
-
-All public `templates/resources/*.html` pages now use `templates/claimsite/resource_base.html`, which places the mature resource pages inside the standalone ClaimHub visual system rather than the Sentrix/RiskAtlas public shell.
-
-## Architecture rule
-
-The intended flow is:
-
-    RiskAtlas / Core ZA reference intelligence
-                 ↓
-          ClaimHub Resources
-            ↙           ↘
-     ClaimBuddy        ClaimHub
-     claimant app      professional portal
-            ↘           ↙
-             shared live case
-
-ClaimHub Resources does not own live case state. ClaimBuddy and ClaimHub operate on the shared case record; RiskAtlas/Core supplies reference intelligence.
-
-## Verification
-
-`tests/test_claimhub_resources.py` covers the marketing/resource entry points, canonical ClaimHub resource URLs and legacy catalogue redirects. The tests are committed but still need to run in CI/local execution before a production release.
+ClaimHub Resources does not store live case state. ClaimBuddy and the professional portal work with the shared case record, subject to the production identity, consent and storage controls documented elsewhere.

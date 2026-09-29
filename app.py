@@ -82,9 +82,8 @@ def create_app(test_config: dict | None = None) -> Flask:
     def claimsite_resources():
         return render_template("claimsite/resources.html", product_model=PRODUCT_MODEL)
 
-    # RiskAtlas owns reference intelligence. ClaimHub keeps compatibility
-    # endpoint names so extracted templates can link out without importing
-    # the RiskAtlas runtime or datasets.
+    # Transitional links to legacy resource pages. ClaimHub owns the claims
+    # guidance surface; migrate these detail pages before a domain cutover.
     def riskatlas_redirect(path: str):
         def view(**values):
             rendered = path
