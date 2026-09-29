@@ -67,7 +67,7 @@ def create_app(test_config: dict | None = None) -> Flask:
     def claimsite_home():
         host = request.host.split(":", 1)[0].lower()
         if host in {"buddy.claimhub.co.za", "www.buddy.claimhub.co.za"}:
-            return redirect(url_for("inbox"), code=302)
+            return app.view_functions["inbox"]()
         return render_template("claimsite/home.html", product_model=PRODUCT_MODEL)
 
     @app.route("/claims")
