@@ -1,0 +1,143 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}Rejection explainer{% endblock %}
+{% block content %}
+{% set active = 'rejection' %}
+{% include '_workspace_nav.html' %}
+
+<div class="ac-panel policy-reader-hero" style="margin-bottom:1.25rem;">
+  <div class="policy-reader-hero-text">
+    <h1>Decision / rejection</h1>
+    <p class="policy-reader-lead">
+      Break the insurer's decision into reasons, disputed dates, policy issues, evidence gaps and practical review actions — without changing the original decision record.
+    </p>
+    {% if explainer.analysis.has_analysis %}
+    <p class="policy-reader-meta">
+      <strong>{{ explainer.analysis.filename or 'Rejection letter' }}</strong>
+      {% if explainer.analysis.pages %} · {{ explainer.analysis.pages }} page{{ 's' if explainer.analysis.pages != 1
+      else '' }}{% endif %}
+      · {{ explainer.analysis.grounds_matched }} ground area{{ 's' if explainer.analysis.grounds_matched != 1 else '' }}
+      detected
+      {% if explainer.rejection_date %} · Rejected {{ explainer.rejection_date }}{% endif %}
+    </p>
+    {% else %}
+    <p class="policy-reader-meta policy-reader-meta--empty">No rejection analysis yet — upload a rejection letter below.
+    </p>
+    {% endif %}
+  </div>
+  <div class="policy-reader-actions">
+    <a href="{{ url_for('edit_claim', claim_id=claim.id) }}#section-dates" class="ac-btn">Key dates</a>
+    <a href="{{ url_for('letters', claim_id=claim.id) }}" class="ac-btn">Draft letters</a>
+    <a href="{{ url_for('gaps', claim_id=claim.id) }}" class="ac-btn">Evidence gaps</a>
+  </div>
+</div>
+
+<div class="ra-grid-2 policy-reader-upload-row">
+  <div class="ac-panel">
+    <h2>Upload rejection letter</h2>
+    <p class="ac-meta" style="margin-top:0;">Formal decline letter, claims assessor email, or internal review outcome
+      (PDF or text).</p>
+    <form method="post" enctype="multipart/form-data" id="rejection-explainer-upload">
+      <input type="hidden" name="action" value="upload">
+      <div class="field">
+        <label for="rejection-file">Rejection file</label>
+        <input type="file" id="rejection-file" name="rejection" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" required>
+      </div>
+      <div class="field">
+        <label for="rejection-note">Note (optional)</label>
+        <input type="text" id="rejection-note" name="rejection_note" placeholder="e.g. Decline letter 14 March 2025">
+      </div>
+      <button type="submit" class="ac-btn ac-ac-btn-primary">Upload &amp; scan</button>
+    </form>
+  </div>
+
+  <div class="ac-panel">
+    <h2>Rejection files in vault ({{ explainer.rejection_documents|length }})</h2>
+    {% if explainer.rejection_documents %}
+    <ul class="policy-doc-list">
+      {% for d in explainer.rejection_documents %}
+      <li>
+        <span class="policy-doc-icon" aria-hidden="true">📄</span>
+        <span>
+          <strong>{{ d.original_name }}</strong>
+          <span class="policy-doc-date">{{ d.uploaded_at[:10] }}</span>
+          {% if d.notes %}<span class="policy-doc-note">{{ d.notes }}</span>{% endif %}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+    <p style="margin-top:1rem;"><a href="{{ url_for('vault', claim_id=claim.id) }}">Open document vault →</a></p>
+    {% if explainer.has_rejection_upload %}
+    <form method="post" class="policy-reanalyze-form" style="margin-top:0.75rem;">
+      <input type="hidden" name="action" value="reanalyze">
+      <button type="submit" class="ac-btn">Re-scan latest rejection</button>
+    </form>
+    {% endif %}
+    {% else %}
+    <p class="ac-meta">No rejection documents yet. Upload from here or tag a file as <em>rejection</em> in the vault.
+    </p>
+    {% endif %}
+  </div>
+</div>
+
+{% if explainer.review_deadline %}
+<div class="ac-panel alert-card" style="margin-top:1.25rem;">
+  <strong>Review deadline recorded:</strong> {{ explainer.review_deadline }}
+  <span class="ac-meta"> — confirm against the letter and diary immediately.</span>
+</div>
+{% endif %}
+
+<section class="rejection-ground-section" style="margin-top:1.75rem;">
+  <div class="ac-section-head">
+    <h2>Review-ground matrix</h2>
+    <span class="ac-meta">{{ explainer.ground_cards_matched|length }} grounds sourced from letter · {{
+      explainer.decision_cards|length }} decision paragraphs</span>
+  </div>
+
+  {% if explainer.ground_cards %}
+  <div class="policy-term-card-grid">
+    {% for card in explainer.ground_cards if card.found %}
+    <article class="policy-term-card rejection-ground-card policy-term-card--{{ card.status }}">
+      <header class="policy-term-card-head">
+        <h3>{{ card.ground }}</h3>
+        <span class="policy-term-status policy-term-status--{{ card.status }}">
+          {% if card.is_decision_block %}Decision text{% elif card.snippet %}Sourced{% else %}Detected{% endif %}
+        </span>
+      </header>
+
+      {% if card.snippet %}
+      <blockquote class="policy-term-snippet">"{{ card.snippet }}"</blockquote>
+      {% endif %}
+
+      {% if card.trap %}
+      <p class="policy-term-trap"><strong>Likely trap:</strong> {{ card.trap }}</p>
+      {% endif %}
+
+      <p class="policy-term-action"><strong>Cure action:</strong> {{ card.cure }}</p>
+
+      <footer class="policy-term-card-links">
+        {% if card.trap_slug %}
+        <a href="{{ url_for('resources_trap_detail', slug=card.trap_slug) }}">Trap detail →</a>
+        {% endif %}
+        <a href="{{ url_for('gaps', claim_id=claim.id) }}">Evidence gaps →</a>
+        <a href="{{ url_for('functional_capacity', claim_id=claim.id) }}">Functional capacity →</a>
+        <a href="{{ url_for('policy_reader', claim_id=claim.id) }}">Policy reader →</a>
+      </footer>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="ac-panel">
+    <p class="ac-meta">Upload a rejection letter to build the review-ground matrix.</p>
+  </div>
+  {% endif %}
+</section>
+
+<div class="ac-panel" style="margin-top:1.25rem;">
+  <h2>Draft internal review request</h2>
+  <p class="ac-meta" style="margin-top:0;">Organized by issue and evidence — edit before sending. Full drafts also on <a
+      href="{{ url_for('letters', claim_id=claim.id) }}">Draft letters</a>.</p>
+  <div class="letter-box">{{ explainer.review_draft }}</div>
+</div>
+
+<script src="{{ url_for('static', filename='js/rejection-explainer.js') }}"></script>
+{% endblock %}
