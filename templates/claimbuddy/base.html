@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block meta_description %}ClaimBuddy — organise and prepare your claim{% endblock %}">
+  <title>{% block title %}ClaimBuddy{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/riskatlas.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/compiler.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimsite.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimhub-standalone.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimbuddy-standalone.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimhub-system.css') }}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="cb-app">
+  <header class="cs-nav cb-global-nav">
+    <a class="cs-brand" href="{{ url_for('claimsite_home') }}">
+      <span class="cs-brand-mark"><i></i><i></i><i></i><i></i></span>
+      <span><strong>ClaimHub</strong><small>People. Evidence. Fair Outcomes.</small></span>
+    </a>
+    <nav aria-label="ClaimHub">
+      <a href="{{ url_for('claimsite_home') }}">Home</a>
+      <a href="{{ url_for('claimsite_home') }}#connected">How it works</a>
+      <a href="{{ url_for('claimsite_resources') }}">Resources</a>
+      <a href="{{ url_for('claimhub.role_home', role='employer') }}">For employers</a>
+      <a href="{{ url_for('claimhub.role_home', role='adviser') }}">For advisers</a>
+      <a class="is-active" href="{{ url_for('inbox') }}">For claimants</a>
+      <a href="{{ url_for('claimsite_home') }}#sentrix">About</a>
+      <a class="cs-nav-primary" href="{{ url_for('intake') }}">Start a claim</a>
+    </nav>
+  </header>
+
+  <div class="cb-productbar">
+    <a class="cb-productbrand" href="{{ url_for('inbox') }}">
+      <span class="cb-productmark">●</span>
+      <span><strong>ClaimBuddy</strong><small>by claimhub.co.za · claimant workspace</small></span>
+    </a>
+    <nav>
+      <a href="{{ url_for('inbox') }}">Claims home</a>
+      {% if claim is defined and claim %}
+      <a href="{{ url_for('dashboard', claim_id=claim.id) }}">Current claim</a>
+      <a href="{{ url_for('dashboard', claim_id=claim.id) }}">Profile</a>
+      {% endif %}
+      <a href="{{ url_for('claimsite_resources') }}">Knowledge & tools</a>
+      <a class="cb-professional-link" href="{{ url_for('claimhub.index') }}">ClaimHub for professionals →</a>
+    </nav>
+  </div>
+
+  <main class="cb-main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+      <div class="cb-flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="cs-footer cb-footer">
+    <div><strong>ClaimBuddy</strong><span>by claimhub.co.za</span></div>
+    <p>Organisation and drafting support only — not legal or medical advice.</p>
+    <a href="{{ url_for('claimsite_home') }}">Back to ClaimHub</a>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

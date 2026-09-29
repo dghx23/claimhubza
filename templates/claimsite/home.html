@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ClaimHub South Africa — clearer income protection claims</title>
+  <meta name="description" content="ClaimHub brings claimants and authorised professionals together around one shared income-protection claim record, with ClaimBuddy for claimants and trusted resources powered by RiskAtlas.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimsite.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimhub-system.css') }}">
+</head>
+<body class="cs-app chm-site">
+  <header class="cs-nav chm-nav">
+    <a class="cs-brand" href="{{ url_for('claimsite_home') }}">
+      <span class="cs-brand-mark"><i></i><i></i><i></i><i></i></span>
+      <span><strong>ClaimHub</strong><small>People. Evidence. Fair Outcomes.</small></span>
+    </a>
+    <nav>
+      <a class="is-active" href="#top">Home</a>
+      <a href="#connected">How it works</a>
+      <a href="{{ url_for('claimsite_resources') }}">Resources</a>
+      <a href="#audiences">Who it’s for</a>
+      <a href="#riskatlas">RiskAtlas</a>
+      <a href="#sentrix">About</a>
+      <a class="cs-nav-primary" href="{{ url_for('inbox') }}">Start a claim</a>
+    </nav>
+  </header>
+
+  <main class="chm-main" id="top">
+  <p class="chm-kicker" style="padding:1rem 2rem">Private beta: claimant case creation and sharing are being prepared for the standalone service.</p>
+    <section class="chm-hero">
+      <div class="chm-hero-copy">
+        <p class="chm-kicker">Income protection for a stronger South Africa</p>
+        <h1>A clearer path through<br><span>income protection claims.</span></h1>
+        <p class="chm-subhead">{{ product_model.principles.headline }}</p>
+        <p class="chm-intro">ClaimHub connects claimants, employers, advisers, clinicians and claims teams around the same live case — with the right information, the right permissions and clear next steps.</p>
+        <div class="chm-actions">
+          <a class="chm-btn primary" href="{{ url_for('inbox') }}">Start a claim →</a>
+          <a class="chm-btn secondary" href="#connected">See how ClaimHub works →</a>
+          <a class="chm-text-link" href="{{ url_for('claimsite_resources') }}">Explore resources</a>
+        </div>
+        <div class="chm-proof">
+          <span>✓ Claimant-facing ClaimBuddy</span>
+          <span>✓ One shared claim record</span>
+          <span>✓ Role-based professional access</span>
+          <span>✓ South Africa first</span>
+        </div>
+      </div>
+      <div class="chm-hero-art" aria-label="ClaimBuddy and ClaimHub connected by one shared claim record">
+        <div class="chm-sky-orb one"></div><div class="chm-sky-orb two"></div>
+        <div class="chm-art-card buddy">
+          <span class="chm-art-icon">👤</span>
+          <small>For claimants</small>
+          <strong>ClaimBuddy</strong>
+          <p>Your claim. Your view. Your control.</p>
+        </div>
+        <div class="chm-art-record">
+          <span>◫</span>
+          <strong>One shared<br>claim record</strong>
+          <small>Policy · Evidence · Timeline · Requests · Decision</small>
+        </div>
+        <div class="chm-art-card hub">
+          <span class="chm-art-icon">👥</span>
+          <small>For professionals</small>
+          <strong>ClaimHub</strong>
+          <p>Coordinate. Review. Respond.</p>
+        </div>
+        <div class="chm-art-arrow left">↔</div>
+        <div class="chm-art-arrow right">↔</div>
+        <div class="chm-art-caption">Different ways in. One shared claim.</div>
+      </div>
+    </section>
+
+    <section class="chm-market-intro" id="market">
+      <div class="chm-market-copy">
+        <p class="chm-kicker">The market challenge</p>
+        <h2>Income protection claims are rarely a single-document process.</h2>
+        <p>A claim can sit across a policy, employer records, medical evidence, occupational information, correspondence and a decision process — with each participant holding a different part of the picture.</p>
+        <p>The result is often a fragmented experience: claimants are trying to understand what is needed, professionals are working from different records, and important evidence or context can arrive late or in the wrong format.</p>
+      </div>
+      <div class="chm-market-problem-grid">
+        <article><span>01</span><strong>Information is scattered</strong><p>Policy wording, medical evidence, employment records and correspondence often live in different places.</p></article>
+        <article><span>02</span><strong>Roles are disconnected</strong><p>Claimants, employers, advisers, clinicians and claims teams may each see only part of the case.</p></article>
+        <article><span>03</span><strong>Evidence can be hard to translate</strong><p>Clinical facts do not automatically explain functional impact, material duties or the policy test.</p></article>
+        <article><span>04</span><strong>Processes are difficult to follow</strong><p>Requests, deadlines, missing documents and decisions can become hard to track across email and separate systems.</p></article>
+      </div>
+    </section>
+
+    <section class="chm-market-map">
+      <div class="chm-market-map-head">
+        <p class="chm-kicker">The market</p>
+        <h2>One category of claim. Multiple entry points and participants.</h2>
+        <p>ClaimHub is designed for the South African income-protection journey across both group and individual cover, while keeping the claimant visible throughout.</p>
+      </div>
+      <div class="chm-market-map-grid">
+        <div class="chm-market-segment group"><span>👥</span><strong>Group cover</strong><small>Employer-linked arrangements where HR, payroll and occupational information may be part of the claim.</small></div>
+        <div class="chm-market-segment individual"><span>👤</span><strong>Individual cover</strong><small>Policies held directly by an individual, often with adviser and insurer involvement.</small></div>
+        <div class="chm-market-segment claimant"><span>◎</span><strong>Claimants</strong><small>Need clarity, visibility and a coherent record of what has happened and what is still needed.</small></div>
+        <div class="chm-market-segment professional"><span>◉</span><strong>Professionals</strong><small>Employers, advisers, clinicians and claims teams need role-specific access without creating parallel case files.</small></div>
+      </div>
+      <div class="chm-market-thesis">
+        <span>ClaimHub’s role</span>
+        <strong>Turn a fragmented multi-party process into one coordinated claim record.</strong>
+        <p>ClaimBuddy gives the claimant a dedicated experience. ClaimHub gives authorised professionals the view they need. ClaimHub Resources and RiskAtlas provide the knowledge layer around the case.</p>
+      </div>
+    </section>
+
+    <section class="chm-trustbar" aria-label="ClaimHub audiences">
+      <div><span>👤</span><strong>Claimants</strong><small>More clarity. More control.</small></div>
+      <div><span>👥</span><strong>Employers / HR</strong><small>Support people with better information.</small></div>
+      <div><span>◉</span><strong>Advisers</strong><small>Organise stronger claim records.</small></div>
+      <div><span>⚕</span><strong>Clinicians</strong><small>Contribute medical and functional evidence.</small></div>
+      <div><span>✓</span><strong>Claims teams</strong><small>Review a clearer evidence record.</small></div>
+    </section>
+
+    <section class="chm-section" id="context">
+      <div class="chm-section-copy">
+        <p class="chm-kicker">01 · The context</p>
+        <h2>Income protection claims involve more than one person — and more than one type of evidence.</h2>
+        <p>Policies can be arranged through an employer or held individually. Either way, the claim can involve policy wording, employment records, medical evidence, functional impact, timelines and insurer correspondence.</p>
+        <a class="chm-inline-link" href="{{ url_for('claimsite_resources') }}">Understand the claim journey →</a>
+      </div>
+      <div class="chm-cover-grid">
+        <article>
+          <span class="chm-card-icon teal">👥</span>
+          <h3>Group cover</h3>
+          <p>Often linked to employment. Employer / HR may hold policy, payroll, duties and absence information.</p>
+          <ul><li>Policy and scheme information</li><li>Employment records</li><li>Job duties and absence dates</li></ul>
+        </article>
+        <article>
+          <span class="chm-card-icon blue">👤</span>
+          <h3>Individual cover</h3>
+          <p>Held for the individual. The claimant or adviser may hold the policy and starting documents.</p>
+          <ul><li>Policy wording and schedule</li><li>Claimant-held records</li><li>Direct insurer correspondence</li></ul>
+        </article>
+        <article class="goal">
+          <span class="chm-card-icon mint">✓</span>
+          <h3>Same goal</h3>
+          <p>Make the claim easier to understand, organise and assess against the policy and available evidence.</p>
+          <strong>Different policies. Same need for clarity.</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="chm-section chm-start" id="start">
+      <div class="chm-section-head">
+        <p class="chm-kicker">02 · Different ways in</p>
+        <h2>A case can start from different places.</h2>
+        <p>Who starts the case does not change the outcome we are aiming for: the claimant remains visible and the case is organised around one shared record.</p>
+      </div>
+      <div class="chm-entry-flow">
+        <article class="claimant"><span>👤</span><small>Claimant</small><strong>Starts in ClaimBuddy</strong><p>Build the claim, add documents and invite others when needed.</p><a href="{{ url_for('inbox') }}">Start your claim →</a></article>
+        <article class="employer"><span>👥</span><small>Employer / HR</small><strong>Starts from employment information</strong><p>Group cover, duties, payroll and absence records can form the starting point.</p><a href="{{ url_for('claimhub.role_home', role='employer') }}">Employer workspace →</a></article>
+        <article class="adviser"><span>◉</span><small>Adviser</small><strong>Starts from the policy or chronology</strong><p>Organise the policy, claim file, evidence gaps or an existing decision.</p><a href="{{ url_for('claimhub.role_home', role='adviser') }}">Adviser workspace →</a></article>
+        <article class="existing"><span>▤</span><small>Existing claim</small><strong>Bring the current claim into one record</strong><p>Organise an already-open or declined claim without starting the insurance process again.</p><a href="{{ url_for('inbox') }}">Organise a claim →</a></article>
+      </div>
+      <div class="chm-claimant-rule">
+        <span>👤✓</span>
+        <div><strong>In every case, ClaimBuddy is the claimant-facing side.</strong><p>The claimant should be able to understand what is happening, contribute to the record and control who can participate.</p></div>
+      </div>
+    </section>
+
+    <section class="chm-section chm-connected" id="connected">
+      <div class="chm-section-head centered">
+        <p class="chm-kicker">03 · One shared claim</p>
+        <h2>Two connected experiences. One underlying case.</h2>
+        <p>{{ product_model.principles.shared_record }}</p>
+      </div>
+      <div class="chm-product-bridge">
+        <article class="chm-product-card buddy">
+          <div class="chm-product-top"><span class="chm-card-icon purple">👤</span><div><small>For claimants</small><h3>ClaimBuddy</h3><p>Your claim. Your view. Your control.</p></div></div>
+          <ul>
+            <li>Build and track the claim</li>
+            <li>Upload and organise documents</li>
+            <li>Understand policy wording</li>
+            <li>Map functional impact</li>
+            <li>See evidence gaps</li>
+            <li>Prepare decisions and review material</li>
+          </ul>
+          <a class="chm-btn buddy" href="{{ url_for('inbox') }}">Open ClaimBuddy →</a>
+        </article>
+
+        <article class="chm-live-record">
+          <span class="database">◫</span>
+          <small>The centre of the platform</small>
+          <h3>One shared<br>live claim record</h3>
+          <ul><li>One source of truth</li><li>Documents and evidence</li><li>Permission-based access</li><li>Requests and tasks</li><li>Clear status and next steps</li></ul>
+          <div class="chm-domains">{% for domain in product_model.record_domains %}<span>{{ domain }}</span>{% endfor %}</div>
+        </article>
+
+        <article class="chm-product-card hub">
+          <div class="chm-product-top"><span class="chm-card-icon blue">👥</span><div><small>For professionals</small><h3>ClaimHub</h3><p>Coordinate. Review. Respond.</p></div></div>
+          <ul>
+            <li>Work on assigned cases</li>
+            <li>Request and provide information</li>
+            <li>Use trusted reference tools</li>
+            <li>Track tasks and events</li>
+            <li>Contribute source evidence</li>
+            <li>Work within authorised scope</li>
+          </ul>
+          <a class="chm-btn hub" href="{{ url_for('claimhub.index') }}">Open ClaimHub →</a>
+        </article>
+      </div>
+      <div class="chm-access-note">
+        <span>🔒</span><p><strong>Access follows the case, not the job title.</strong> {{ product_model.principles.access }}</p>
+      </div>
+    </section>
+
+    <section class="chm-section chm-resources" id="resources">
+      <div class="chm-section-head split">
+        <div>
+          <p class="chm-kicker">04 · Knowledge when it matters</p>
+          <h2>ClaimHub Resources helps people understand the claim.</h2>
+          <p>Guides, tools, definitions and trusted references sit alongside the live case so people can make sense of what the policy asks for and what evidence may be needed.</p>
+        </div>
+        <a class="chm-btn secondary" href="{{ url_for('claimsite_resources') }}">Browse all resources →</a>
+      </div>
+      <div class="chm-resource-grid">
+        <a href="{{ url_for('resources_workflow') }}"><span>▤</span><strong>Step-by-step guides</strong><small>Understand each stage.</small></a>
+        <a href="{{ url_for('resources_terms') }}"><span>▥</span><strong>Policy terms</strong><small>Plain-language explanations.</small></a>
+        <a href="{{ url_for('resources_evidence_gaps') }}"><span>⌕</span><strong>Evidence gaps</strong><small>See what may be missing.</small></a>
+        <a href="{{ url_for('resources_language_map') }}"><span>◉</span><strong>Functional impact</strong><small>Connect health and work.</small></a>
+        <a href="{{ url_for('resources_disability_definitions') }}"><span>✚</span><strong>Disability definitions</strong><small>Understand policy tests.</small></a>
+        <a href="{{ url_for('resources_life_insurers', jurisdiction='za') }}"><span>▦</span><strong>Insurer directory</strong><small>Find South African insurers.</small></a>
+        <a href="{{ url_for('resources_nfosa_dispute') }}"><span>⚖</span><strong>NFO & ombud</strong><small>Understand escalation.</small></a>
+        <a href="{{ url_for('resources_clinical_atlas') }}"><span>⚕</span><strong>Clinical reference</strong><small>Conditions and medicines.</small></a>
+      </div>
+    </section>
+
+    <section class="chm-section chm-riskatlas" id="riskatlas">
+      <div class="chm-riskatlas-brand">
+        <span class="chm-risk-mark">●◌●</span>
+        <div><p class="chm-kicker">05 · Reference intelligence</p><h2>Powered by RiskAtlas.</h2><p>{{ product_model.principles.riskatlas }}</p></div>
+      </div>
+      <div class="chm-risk-grid">
+        <div><span>▤</span><strong>Policy & insurer</strong><small>Definitions, structures and reference context.</small></div>
+        <div><span>⚕</span><strong>Clinical & medical</strong><small>Conditions, medicines and clinical context.</small></div>
+        <div><span>▣</span><strong>Occupational</strong><small>Work, duties and functional context.</small></div>
+        <div><span>⚖</span><strong>Legal & regulatory</strong><small>Relevant South African regulatory context.</small></div>
+        <div><span>👥</span><strong>Dispute & ombud</strong><small>Review and escalation pathways.</small></div>
+      </div>
+    </section>
+
+    <section class="chm-section" id="audiences">
+      <div class="chm-section-head centered">
+        <p class="chm-kicker">Who ClaimHub is for</p>
+        <h2>One platform. Different responsibilities.</h2>
+        <p>Each participant sees the parts of the case they are authorised to work with, while the claimant remains at the centre.</p>
+      </div>
+      <div class="chm-audience-grid">
+        <article><span>👤</span><h3>Claimants</h3><p>Understand the claim, organise records, track what is needed and control participation.</p></article>
+        <article><span>👥</span><h3>Employers / HR</h3><p>Provide employment facts, duties, absence records and group-cover information.</p></article>
+        <article><span>◉</span><h3>Advisers</h3><p>Support policy interpretation, chronology, evidence organisation and review preparation.</p></article>
+        <article><span>⚕</span><h3>Clinicians</h3><p>Provide medical and functional evidence without rewriting the claimant’s own story.</p></article>
+        <article><span>✓</span><h3>Claims teams</h3><p>Review authorised evidence, request information and provide decisions and documents.</p></article>
+      </div>
+    </section>
+
+    <section class="chm-cta">
+      <div>
+        <p class="chm-kicker">Start where you are</p>
+        <h2>Already claiming, just getting started, or trying to understand what comes next?</h2>
+        <p>ClaimHub gives the claim a clearer structure without pretending every claim follows the same path.</p>
+      </div>
+      <div class="chm-cta-actions">
+        <a class="chm-btn primary" href="{{ url_for('inbox') }}">Open ClaimBuddy →</a>
+        <a class="chm-btn light" href="{{ url_for('claimsite_resources') }}">Explore resources →</a>
+        <a class="chm-btn outline" href="{{ url_for('claimhub.index') }}">Professional portal →</a>
+      </div>
+    </section>
+
+    <section class="chm-sentrix" id="sentrix">
+      <div class="chm-sentrix-brand"><span>◇</span><div><strong>Sentrix<span>Digital</span></strong><small>Technology. Knowledge. Impact.</small></div></div>
+      <div class="chm-sentrix-copy"><strong>Built and operated by Sentrix Digital.</strong><p>{{ product_model.principles.sentrix }} RiskAtlas supplies the intelligence layer; ClaimHub owns the live claims-coordination experience.</p></div>
+      <div class="chm-sentrix-tag">Technology for people.<br>Outcomes for good.</div>
+    </section>
+
+    <p class="chm-beta-note">Private beta: the standalone public site is available for review. Claimant identity, document storage, and professional invitation acceptance are still being completed before case workspaces go live.</p>
+  </main>
+
+  <footer class="cs-footer chm-footer">
+    <div><strong>ClaimHub</strong><span>People. Evidence. Fair Outcomes.</span></div>
+    <p>ClaimHub helps organise and coordinate claims. It does not replace legal or medical judgment and does not guarantee a claim outcome.</p>
+    <div><a href="{{ url_for('claimsite_resources') }}">Resources</a> · <a href="{{ url_for('inbox') }}">ClaimBuddy</a> · <a href="{{ url_for('claimhub.index') }}">ClaimHub portal</a></div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,1247 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}{% if editing %}Edit claim{% else %}New claim intake{% endif %} — ClaimBuddy{% endblock %}
+{% block body_class %}ac-body ra-home-body sx-shell{% endblock %}
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/compiler.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/claimbuddy-intake.css') }}">
+{% endblock %}
+{% block content %}
+{% if editing and claim %}
+{% set active = 'edit' %}
+{% include '_workspace_nav.html' %}
+{% endif %}
+
+<section class="cb-intake-hero">
+  <div>
+    <p class="cb-kicker">South Africa · Claim setup</p>
+    <h1>{% if editing %}Update your claim workspace{% else %}Build the foundation of your claim{% endif %}</h1>
+    <p>Start with what you know. ClaimBuddy turns the policy, work, health, income and date information into the structure used across every module.</p>
+    <div class="cb-intake-trust">
+      <span>8 guided steps</span>
+      <span>Save and refine later</span>
+      <span>Nothing is sent automatically</span>
+    </div>
+  </div>
+  <aside>
+    <span>South Africa</span>
+    <strong>Income protection & disability</strong>
+    <small>Policy → stage → parties → work → health → income → dates → notes</small>
+  </aside>
+</section>
+
+<form method="post" enctype="multipart/form-data" class="ac-panel intake-wizard-form cb-intake-form" data-intake-editing="{{ 'true' if editing else 'false' }}"{% if editing and claim %} data-claim-id="{{ claim.id }}"{% endif %}>
+  <input type="hidden" name="jurisdiction" value="za">
+  <input type="hidden" name="policy_analysis_json" id="policy_analysis_json" value="{{ claim.policy_analysis_json if claim and claim.policy_analysis_json else '' }}">
+  <input type="hidden" name="occupation_profile_json" id="occupation_profile_json" value="{{ claim.occupation_profile_json if claim and claim.occupation_profile_json else '' }}">
+  <input type="hidden" name="functional_capacity_json" id="functional_capacity_json" value="{{ claim.functional_capacity_json if claim and claim.functional_capacity_json else '' }}">
+
+  <nav class="intake-step-nav" aria-label="Intake steps">
+    <button type="button" class="intake-step-tab is-active" data-intake-step="0"><span class="intake-step-num">1</span><span><strong>My policy</strong><small>Cover & wording</small></span></button>
+    <button type="button" class="intake-step-tab" data-intake-step="1"><span class="intake-step-num">2</span><span><strong>Where I am</strong><small>Claim stage</small></span></button>
+    <button type="button" class="intake-step-tab" data-intake-step="2"><span class="intake-step-num">3</span><span><strong>Who is involved</strong><small>Parties & references</small></span></button>
+    <button type="button" class="intake-step-tab" data-intake-step="3"><span class="intake-step-num">4</span><span><strong>My work</strong><small>Occupation & duties</small></span></button>
+    <button type="button" class="intake-step-tab" data-intake-step="4"><span class="intake-step-num">5</span><span><strong>My health</strong><small>Story & function</small></span></button>
+    <button type="button" class="intake-step-tab" data-intake-step="5"><span class="intake-step-num">6</span><span><strong>My income</strong><small>Salary & payslips</small></span></button>
+    <button type="button" class="intake-step-tab" data-intake-step="6"><span class="intake-step-num">7</span><span><strong>Key dates</strong><small>Timeline & deadlines</small></span></button>
+    <button type="button" class="intake-step-tab" data-intake-step="7"><span class="intake-step-num">8</span><span><strong>Notes</strong><small>Record access & context</small></span></button>
+  </nav>
+  <div id="intake-coach" class="intake-coach" aria-live="polite" hidden></div>
+
+  <div class="intake-screens">
+  <div class="form-section policy-section intake-screen is-active" id="section-policy" data-intake-step="0">
+    <p class="cb-step-eyebrow">Step 1 of 8</p><h2>Start with your policy</h2>
+    <p class="field-hint">
+      Start by choosing whether your cover is through an <strong>employer group scheme</strong> or a <strong>private individual policy</strong>.
+      ClaimBuddy will scan your upload and link clauses to the rest of this form.
+      <a href="{{ url_for('resources_terms') }}">Core policy terms →</a>
+    </p>
+
+    <input type="hidden" name="policy_plan_type" id="policy_plan_type" value="{{ claim.policy_plan_type if claim and claim.policy_plan_type else '' }}">
+    <input type="hidden" name="policy_insurer_tile" id="policy_insurer_tile" value="">
+
+    <div id="policy-plan-picker" class="policy-plan-picker"{% if claim and claim.policy_plan_type %} hidden{% endif %}>
+      <p class="policy-plan-picker-label">What type of income protection cover is this?</p>
+      <div class="policy-plan-split">
+        <button type="button" class="policy-plan-card" data-plan-type="group" aria-pressed="false">
+          <span class="policy-plan-icon" aria-hidden="true">🏢</span>
+          <strong>Group plan</strong>
+          <span class="policy-plan-desc">Employer scheme, member certificate, HR benefits pack, or group schedule</span>
+        </button>
+        <button type="button" class="policy-plan-card" data-plan-type="private" aria-pressed="false">
+          <span class="policy-plan-icon" aria-hidden="true">🛡️</span>
+          <strong>Private plan</strong>
+          <span class="policy-plan-desc">Individual disability or income protection policy you hold directly</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="policy-plan-active" class="policy-plan-active"{% if not claim or not claim.policy_plan_type %} hidden{% endif %}>
+      <div class="policy-plan-active-bar">
+        <span id="policy-plan-active-label" class="policy-plan-active-label">
+          {% if claim and claim.policy_plan_type == 'private' %}Private plan{% elif claim and claim.policy_plan_type == 'group' %}Group plan{% else %}Plan selected{% endif %}
+        </span>
+        <button type="button" class="ac-btn ac-btn-secondary ac-btn-tiny" id="policy-plan-change">Change plan type</button>
+      </div>
+
+      <div id="policy-group-flow" class="policy-plan-flow"{% if claim and claim.policy_plan_type != 'group' %} hidden{% endif %}>
+        <h3 class="policy-flow-title">Group plan documents</h3>
+        <p class="field-hint">Upload your employer benefits booklet, group schedule, member certificate, or HR income-protection summary.</p>
+      </div>
+
+      <div id="policy-private-flow" class="policy-plan-flow"{% if claim and claim.policy_plan_type != 'private' %} hidden{% endif %}>
+        <h3 class="policy-flow-title">Private plan — select insurer</h3>
+        <p class="field-hint">Choose your insurer, then upload your policy wording or schedule in the panel below.</p>
+        <div class="policy-insurer-panel">
+          <div class="insurer-logo-grid" role="listbox" aria-label="Select insurer">
+            {% for tile in policy_insurer_tiles %}
+            <button type="button"
+                    class="insurer-logo-tile{% if tile.id == 'other' %} insurer-logo-tile--other{% endif %}"
+                    data-insurer-id="{{ tile.id }}"
+                    data-insurer-name="{{ tile.name }}"
+                    data-insurer-nfo="{{ tile.nfo_name }}"
+                    style="--insurer-accent: {{ tile.accent }}"
+                    role="option"
+                    aria-selected="false">
+              <span class="insurer-logo-mark" aria-hidden="true">{{ tile.mark }}</span>
+              <span class="insurer-logo-name">{{ tile.name }}</span>
+            </button>
+            {% endfor %}
+          </div>
+          <div id="policy-insurer-other-wrap" class="policy-insurer-other" hidden>
+            <label for="policy_insurer_other">Other insurer name</label>
+            <input type="text" id="policy_insurer_other" placeholder="Enter insurer name" autocomplete="off">
+          </div>
+          <p class="policy-insurer-status" id="policy-insurer-status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div id="policy-upload-wrap" class="policy-upload-wrap{% if claim and claim.policy_plan_type == 'private' %} policy-upload-wrap--private{% elif claim and claim.policy_plan_type == 'group' %} policy-upload-wrap--group{% endif %}"{% if not claim or not claim.policy_plan_type %} hidden{% endif %}>
+        <div class="policy-upload-layout" id="policy-upload-layout">
+          <div class="policy-upload-side-label" id="policy-upload-side-label"{% if not claim or claim.policy_plan_type != 'private' %} hidden{% endif %}>
+            <span class="policy-upload-side-chip" id="policy-upload-insurer-chip">Insurer</span>
+          </div>
+          <div class="policy-upload-main">
+            <h4 class="policy-flow-title" id="policy-upload-heading">
+              {% if claim and claim.policy_plan_type == 'group' %}Upload group policy{% else %}Upload policy{% endif %}
+            </h4>
+            <div class="policy-upload-panel">
+              <div class="upload-compact">
+                <p class="upload-dropzone-desc" id="policy-upload-desc">
+                  {% if claim and claim.policy_plan_type == 'group' %}
+                  Employer benefits booklet, group schedule, or member certificate.
+                  {% else %}
+                  Policy wording, schedule, or member certificate.
+                  {% endif %}
+                </p>
+                <input type="file" name="policy" id="policy" multiple accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" class="visually-hidden-input">
+                <button type="button" class="ac-btn ac-btn-primary policy-open" id="policy-open">Browse or drop policy…</button>
+                <p class="upload-formats">PDF, Word, or text · max 32 MB each</p>
+                <p class="job-spec-preview-count" id="policy-preview-count" hidden></p>
+                <ul class="job-spec-preview-list" id="policy-preview-list" aria-live="polite"></ul>
+                <p class="job-spec-preview-empty" id="policy-preview-empty">No policy file selected yet.</p>
+                <p class="policy-analyze-status" id="policy-analyze-status" aria-live="polite"></p>
+              </div>
+              <div class="field" style="margin-top:0.75rem;">
+                <label for="policy_note">Policy note (optional)</label>
+                <input type="text" name="policy_note" id="policy_note" placeholder="e.g. Group income protection schedule 2024, employer benefits pack">
+              </div>
+              {% if policies %}
+              <div class="uploaded-job-specs">
+                <strong>Already uploaded</strong>
+                <ul>
+                  {% for doc in policies %}
+                  <li>
+                    <span>{{ doc.original_name }}</span>
+                    <span class="uploaded-date">{{ doc.uploaded_at[:10] }}</span>
+                    {% if editing %}
+                    <form method="post" action="{{ url_for('delete_document', doc_id=doc.id) }}" class="inline-remove">
+                      <input type="hidden" name="next" value="edit">
+                      <button type="submit" class="ac-btn ac-btn-danger ac-btn-tiny">Remove</button>
+                    </form>
+                    {% endif %}
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="policy-cross-link" class="policy-cross-link" hidden>
+      <div class="policy-cross-link-header">
+        <span class="policy-cross-link-icon">📋</span>
+        <div>
+          <strong id="policy-cross-link-title">Policy linked across your intake</strong>
+          <p id="policy-cross-link-sub" class="policy-cross-link-sub"></p>
+        </div>
+      </div>
+      <div id="policy-suggested" class="policy-suggested" hidden></div>
+      <div id="policy-traps" class="policy-traps" hidden></div>
+      <div id="policy-cross-link-body" class="policy-cross-link-body"></div>
+      <p class="policy-cross-link-note">Linked fields show a green highlight and a <strong>?</strong> tooltip with policy wording — hover for coverage details. Section links open that intake step directly.</p>
+    </div>
+  </div>
+
+  <div class="form-section intake-screen" id="section-claim-stage" data-intake-step="1" hidden>
+    <p class="cb-step-eyebrow">Step 2 of 8</p><h2>Where is your claim now?</h2>
+    <p class="field-hint section-sub">
+      Choose where you are right now — ClaimBuddy tailors evidence gaps, trap warnings and checklist priorities to your stage.
+    </p>
+
+    <input type="hidden" name="claim_stage" id="claim_stage" value="{{ claim.claim_stage if claim and claim.claim_stage else '' }}">
+
+    <div class="claim-stage-picker" id="claim-stage-picker">
+      <p class="claim-stage-picker-label" id="claim-stage-picker-label">Where are you in the process?</p>
+      <div class="claim-stage-grid" role="listbox" aria-labelledby="claim-stage-picker-label">
+        {% for tile in claim_stage_tiles %}
+        <button type="button"
+                class="claim-stage-card{% if claim and claim.claim_stage == tile.id %} is-selected{% endif %}"
+                data-stage="{{ tile.id }}"
+                data-stage-label="{{ tile.label }}"
+                style="--stage-accent: {{ tile.accent }}"
+                role="option"
+                aria-selected="{% if claim and claim.claim_stage == tile.id %}true{% else %}false{% endif %}">
+          <span class="claim-stage-icon" aria-hidden="true">{{ tile.icon }}</span>
+          <strong class="claim-stage-title">{{ tile.label }}</strong>
+          <span class="claim-stage-focus">{{ tile.focus }}</span>
+          <span class="claim-stage-tools">{{ tile.tools }}</span>
+        </button>
+        {% endfor %}
+      </div>
+      <p class="claim-stage-status" id="claim-stage-status" aria-live="polite">
+        {% if claim and claim.claim_stage %}
+        {% for tile in claim_stage_tiles if tile.id == claim.claim_stage %}{{ tile.label }} selected — press Next → when ready.{% endfor %}
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  <div class="form-section intake-screen" id="section-parties" data-intake-step="2" hidden>
+    <p class="cb-step-eyebrow">Step 3 of 8</p><h2>Who is involved?</h2>
+    <p class="field-hint">Upload your policy in section 1 first — <strong>policyholder</strong>, <strong>policy number</strong>, and <strong>insurer</strong> auto-fill when found. Also capture <strong>cover start</strong> and <strong>waiting period</strong> from your schedule here.</p>
+    <div class="ra-grid-2">
+      <div class="field"><label for="claimant_name">Claimant name</label><input name="claimant_name" id="claimant_name" value="{{ claim.claimant_name if claim else '' }}"></div>
+      <div class="field party-field">
+        <label for="employer">Employer</label>
+        <p class="field-hint">Start typing for SA employer suggestions — or enter any employer not listed.</p>
+        <div class="party-combobox">
+          <input name="employer" id="employer" value="{{ claim.employer if claim else '' }}" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="employer-suggestions" aria-autocomplete="list" placeholder="e.g. Deloitte South Africa, Eskom, Shoprite…">
+          <ul id="employer-suggestions" class="party-suggestions" role="listbox" hidden></ul>
+        </div>
+        <p class="party-status" id="employer-status" aria-live="polite"></p>
+      </div>
+      <div class="field party-field">
+        <label for="insurer">Insurer</label>
+        <p class="field-hint">Full list of <a href="https://www.nfosa.co.za/participants/life-insurance-division/" target="_blank" rel="noopener">NFO Life Insurance Division</a> participants — select yours, or choose Other if not listed.</p>
+        {% set saved_insurer = claim.insurer if claim and claim.insurer else '' %}
+        {% set insurer_on_list = saved_insurer in nfo_life_insurers %}
+        <select name="insurer" id="insurer">
+          <option value="">— Select life insurer —</option>
+          {% for ins in nfo_life_insurers %}
+          <option value="{{ ins }}"{% if saved_insurer == ins %} selected{% endif %}>{{ ins }}</option>
+          {% endfor %}
+          <option value="__other__"{% if saved_insurer and not insurer_on_list %} selected{% endif %}>Other (not on NFO list)</option>
+        </select>
+        <div id="insurer-other-wrap" class="insurer-other-wrap"{% if saved_insurer and not insurer_on_list %}{% else %} hidden{% endif %}>
+          <label for="insurer_other">Other insurer name</label>
+          <input type="text" name="insurer_other" id="insurer_other" value="{% if saved_insurer and not insurer_on_list %}{{ saved_insurer }}{% endif %}" placeholder="Enter insurer name" autocomplete="off">
+        </div>
+      </div>
+      <div class="field">
+        <label for="policyholder">Policyholder</label>
+        <input name="policyholder" id="policyholder" value="{{ claim.policyholder if claim else '' }}" placeholder="Auto-fills from policy — usually employer or group scheme holder">
+      </div>
+      <div class="field">
+        <label for="policy_number">Policy number</label>
+        <input name="policy_number" id="policy_number" value="{{ claim.policy_number if claim else '' }}" placeholder="Auto-fills from policy schedule or certificate">
+      </div>
+      <div class="field">
+        <label for="claim_reference" class="label-with-help">
+          Claim reference
+          <span class="policy-hint-wrap field-help-wrap">
+            <button type="button" class="policy-hint-btn" aria-label="What is a claim reference?">?</button>
+            <span class="policy-hint-popover field-help-popover" role="tooltip">
+              <strong>Claim reference</strong>
+              <span class="policy-hint-status policy-hint-status-mentioned">Insurer reference</span>
+              <p class="policy-hint-guidance">
+                The reference number <strong>generated and assigned by the insurer</strong> when your claim is registered —
+                often on the acknowledgement letter, claim form receipt, or insurer emails.
+              </p>
+              <p class="policy-hint-guidance">
+                It is different from the <strong>policy number</strong>. Leave blank if you have not submitted yet or have not received a reference.
+              </p>
+            </span>
+          </span>
+        </label>
+        <input name="claim_reference" id="claim_reference" value="{{ claim.claim_reference if claim else '' }}" placeholder="e.g. from insurer acknowledgement — leave blank if not assigned yet">
+      </div>
+      <div class="field cover-start-field">
+        <label for="cover_start" class="label-with-help">
+          Cover start
+          <span class="policy-hint-wrap field-help-wrap">
+            <button type="button" class="policy-hint-btn" aria-label="What is cover start?">?</button>
+            <span class="policy-hint-popover field-help-popover" role="tooltip">
+              <strong>Cover start (commencement of cover)</strong>
+              <span class="policy-hint-status policy-hint-status-mentioned">Policy term</span>
+              <p class="policy-hint-guidance">
+                The date your <em>income protection membership or benefit</em> began under the group policy —
+                usually on your schedule or member certificate.
+              </p>
+              <p class="policy-hint-guidance">
+                Insurers use this for <strong>pre-existing condition</strong> and eligibility arguments.
+                It is not the same as when symptoms started or when you stopped work.
+              </p>
+              <p class="field-help-link">
+                <a href="{{ url_for('resources_language_map') }}#term-cover-start">Language map → Cover start</a>
+              </p>
+            </span>
+          </span>
+        </label>
+        <input type="date" name="cover_start" id="cover_start" value="{{ claim.cover_start if claim else '' }}">
+        <p class="field-hint">From policy schedule or HR benefits pack — check commencement of cover wording.</p>
+      </div>
+      <div class="field waiting-period-field grid-span-2">
+        <label for="waiting_period_select" class="label-with-help">
+          Waiting period
+          <span class="policy-hint-wrap field-help-wrap">
+            <button type="button" class="policy-hint-btn" aria-label="What is a waiting period?">?</button>
+            <span class="policy-hint-popover field-help-popover" role="tooltip">
+              <strong>Waiting period (deferred / elimination period)</strong>
+              <span class="policy-hint-status policy-hint-status-mentioned">Policy term</span>
+              <p class="policy-hint-guidance">
+                The continuous time you must be absent or incapacitated <em>before</em> monthly benefits start.
+                It is <strong>not</strong> the same as when symptoms began or when you first saw a doctor.
+              </p>
+              <p class="policy-hint-guidance">
+                Insurers often require proof of continuity across the whole period — gaps or light-duty returns can reset the clock.
+              </p>
+              <p class="field-help-link">
+                <a href="{{ url_for('resources_language_map') }}#term-waiting-period">Language map → Waiting period</a>
+              </p>
+            </span>
+          </span>
+        </label>
+        <p class="field-hint">From your policy schedule — auto-fills when detected on upload.</p>
+        {% set wp = claim.waiting_period if claim else '' %}
+        {% set wp_is_other = wp and wp not in waiting_period_standard %}
+        <select id="waiting_period_select" aria-describedby="waiting_period_hint">
+          {% for value, label in waiting_period_options %}
+          <option value="{{ value }}" {% if (wp_is_other and value == '__other__') or (not wp_is_other and wp == value) %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <input
+          type="text"
+          id="waiting_period_other"
+          class="waiting-period-other"
+          placeholder="e.g. 90 days, 26 weeks…"
+          value="{{ wp if wp_is_other else '' }}"
+          {% if not wp_is_other %}hidden{% endif %}
+        >
+        <input type="hidden" name="waiting_period" id="waiting_period" value="{{ wp }}">
+        <p class="field-hint" id="waiting_period_hint">Also called deferred period or elimination period in policy wording.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section intake-screen" id="section-occupation" data-intake-step="3" hidden>
+    <h2>4. Occupation &amp; material duties</h2>
+    <p class="field-hint section-sub">Your job title and core tasks — the health story builder and functional-capacity module are on the next screen.</p>
+    <p class="field-hint">
+      <a href="{{ url_for('resources_language_map') }}">Language map →</a>
+      Insurers test whether illness stops you performing <strong>material duties</strong>, not just your job title.
+    </p>
+    <div class="field occupation-field">
+      <label for="occupation">Job title / occupation <span class="label-tag tag-functional">functional lane</span></label>
+      <p class="field-hint">Start typing — suggestions from <strong>ESCO</strong> (EU standard occupation database). Select one to optionally auto-fill duties.</p>
+      <div class="occupation-combobox">
+        <input
+          type="text"
+          name="occupation"
+          id="occupation"
+          value="{{ claim.occupation if claim else '' }}"
+          autocomplete="off"
+          role="combobox"
+          aria-expanded="false"
+          aria-controls="occupation-suggestions"
+          aria-autocomplete="list"
+          placeholder="e.g. management consultant, auditor, software developer…"
+        >
+        <ul id="occupation-suggestions" class="occupation-suggestions" role="listbox" hidden></ul>
+      </div>
+      <p class="occupation-status" id="occupation-status" aria-live="polite"></p>
+    </div>
+    <div class="duty-panel">
+      <div class="duty-panel-text">
+        <label>Material duties (core tasks your job actually requires) <span class="label-tag tag-functional">not just title</span></label>
+        <p class="field-hint duty-panel-hint">Type your own summary below <em>or</em> upload a job spec on the right — both together is best.</p>
+        <textarea name="material_duties" id="material_duties" rows="8" placeholder="e.g. Client-facing pressure, 10h days, site travel, supervision, decision-making under deadline…">{{ claim.material_duties if claim else '' }}</textarea>
+      </div>
+      <div class="duty-panel-upload">
+        <label>Job specification / job ad <span class="label-tag tag-functional">upload</span></label>
+        <div class="upload-compact">
+          <p class="upload-dropzone-desc">Job specification, position profile, HR job description, or the job ad for your exact role.</p>
+          <input type="file" name="job_spec" id="job_spec" multiple accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" class="visually-hidden-input">
+          <button type="button" class="ac-btn ac-btn-primary" id="job-spec-open">Browse or drop files…</button>
+          <p class="upload-formats">PDF, Word, text, or image · max 32 MB each</p>
+          <p class="job-spec-preview-count" id="job-spec-preview-count" hidden></p>
+          <ul class="job-spec-preview-list" id="job-spec-preview-list" aria-live="polite"></ul>
+          <p class="job-spec-preview-empty" id="job-spec-preview-empty">No files selected yet.</p>
+        </div>
+        <div class="field" style="margin-top:0.75rem;">
+          <label for="job_spec_note">Note on upload (optional)</label>
+          <input type="text" name="job_spec_note" id="job_spec_note" placeholder="e.g. LinkedIn ad Mar 2022, internal JD v3">
+        </div>
+        {% if job_specs %}
+        <div class="uploaded-job-specs">
+          <strong>Already uploaded</strong>
+          <ul>
+            {% for doc in job_specs %}
+            <li>
+              <span>{{ doc.original_name }}</span>
+              <span class="uploaded-date">{{ doc.uploaded_at[:10] }}</span>
+              {% if editing %}
+              <form method="post" action="{{ url_for('delete_document', doc_id=doc.id) }}" class="inline-remove">
+                <input type="hidden" name="next" value="edit">
+                <button type="submit" class="ac-btn ac-btn-danger ac-btn-tiny">Remove</button>
+              </form>
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div id="material-duties-means" class="material-duties-means" hidden>
+      <p class="occupation-why-matters">
+        <strong>Why confirm?</strong> Insurers test whether illness stops you performing <em>material duties</em> — not just your job title.
+        Tick what is right, correct what is wrong, then save so your claim profile matches your real role.
+      </p>
+
+      <div id="occupation-plain-terms" class="occupation-plain-terms">
+        <div class="means-box-header">In plain terms — tick what's right</div>
+        <p id="material-duties-means-lead" class="means-box-lead"></p>
+        <p id="material-duties-means-paragraph" class="means-box-paragraph"></p>
+        <ul id="occupation-plain-checklist" class="occupation-plain-checklist" aria-label="Plain terms checklist"></ul>
+        <p id="material-duties-means-optional" class="means-box-optional" hidden></p>
+      </div>
+
+      <div id="occupation-role-requirements" class="occupation-role-requirements">
+        <div class="means-box-header">What this role broadly requires</div>
+        <p class="occupation-role-intro">General picture of demands insurers test for incapacity — grouped by functional area.</p>
+        <div class="occupation-role-dimensions" aria-hidden="true">
+          <span class="occupation-role-dimension">🧠 Cognitive</span>
+          <span class="occupation-role-dimension">👥 People</span>
+          <span class="occupation-role-dimension">🏗️ Physical</span>
+          <span class="occupation-role-dimension">⏱️ Pace</span>
+        </div>
+        <div id="occupation-role-requirements-text" class="occupation-role-body"></div>
+        <div class="occupation-role-actions" role="group" aria-label="Confirm role requirements">
+          <button type="button" class="ac-btn ac-btn-primary ac-btn-small occupation-role-btn is-selected" id="occupation-role-confirm" data-role-state="confirmed">✓ Broadly right</button>
+          <button type="button" class="ac-btn ac-btn-secondary ac-btn-small occupation-role-btn" id="occupation-role-reject" data-role-state="rejected">✗ Not quite</button>
+        </div>
+        <div id="occupation-role-manual" class="occupation-role-manual" hidden>
+          <label for="occupation-role-manual-input">Describe what your role actually requires</label>
+          <textarea id="occupation-role-manual-input" rows="3" placeholder="e.g. 50% client travel, board presentations, 12-hour days during audit season, on-site supervision…"></textarea>
+        </div>
+      </div>
+
+      <div id="occupation-confirm-bar" class="occupation-confirm-bar">
+        <button type="button" class="ac-btn ac-btn-primary" id="occupation-profile-save">Save confirmed profile</button>
+        <span id="occupation-autosave-status" class="occupation-autosave-status" aria-live="polite"></span>
+      </div>
+
+      <div id="occupation-profile-updated" class="occupation-profile-updated" hidden>
+        <div class="means-box-header">Your confirmed occupation profile</div>
+        <p id="occupation-updated-lead" class="means-box-lead"></p>
+        <ul id="occupation-updated-list" class="means-box-list"></ul>
+        <p id="occupation-updated-role" class="occupation-updated-role"></p>
+        <p class="means-box-note">Saved to your claim — material duties above were updated. You can still edit manually.</p>
+      </div>
+    </div>
+    <p class="field-hint occupation-next-hint">Press <strong>Next →</strong> for the health story builder and functional-capacity module link.</p>
+  </div>
+
+  <div class="form-section intake-screen" id="section-health-story" data-intake-step="4" hidden>
+    <p class="cb-step-eyebrow">Step 5 of 8</p><h2>Tell the health story in functional terms</h2>
+    <p class="field-hint section-sub">
+      Everyday health story → medical record → review. Map symptoms to material duties in the
+      <strong>functional-capacity module</strong> (synced with this profile).
+      <a href="{{ url_for('resources_language_map') }}">Language map →</a>
+    </p>
+
+    {% if claim is defined and claim %}
+    <div class="ac-panel functional-intake-card" id="functional-intake-card">
+      <div class="functional-intake-card-head">
+        <strong>Functional-capacity builder</strong>
+        <span class="label-tag tag-functional">separate module · synced</span>
+      </div>
+      <p class="field-hint">
+        Duty-impact matrix for the own-occupation test — opens in its own workspace and stays aligned with your health story and claim pack.
+      </p>
+      {% if fc_view and fc_view.row_count %}
+      <p class="functional-intake-status">
+        <strong>{{ fc_view.row_count }} duty link{{ 's' if fc_view.row_count != 1 else '' }}</strong> saved
+        {% if fc_view.occupation_title %} · {{ fc_view.occupation_title }}{% endif %}
+      </p>
+      {% else %}
+      <p class="functional-intake-status functional-intake-status--empty">No duty links yet — open the builder after capturing onset and medical facts.</p>
+      {% endif %}
+      <a href="{{ url_for('functional_capacity', claim_id=claim.id) }}" class="ac-btn ac-btn-primary ac-btn-small">Open functional-capacity builder →</a>
+    </div>
+    {% else %}
+    <div class="ac-panel functional-intake-card">
+      <p class="field-hint" style="margin:0;">Save your claim workspace first — then open the functional-capacity builder from the dashboard or this screen.</p>
+    </div>
+    {% endif %}
+
+    <div class="illness-story-panel" id="illness-story-panel">
+      <div class="illness-story-header">
+        <div>
+          <strong>Health story builder</strong>
+          <span class="label-tag tag-everyday">guided · 4 steps</span>
+        </div>
+        <div class="illness-story-score" aria-live="polite">
+          <span id="illness-score-label">Story strength</span>
+          <div class="illness-score-bar"><div id="illness-score-fill" class="illness-score-fill"></div></div>
+          <span id="illness-score-pct">0%</span>
+        </div>
+        <a href="{{ url_for('resources_language_map') }}">Language map →</a>
+      </div>
+
+      <div class="illness-ladder" aria-label="Four-step claim language ladder">
+        {% for rung in story_ladder %}
+        <div class="illness-ladder-rung illness-lane-{{ rung.lane }}">
+          <span class="illness-ladder-step">{{ rung.step }}</span>
+          <span class="illness-ladder-title">{{ rung.title }}</span>
+          <span class="illness-ladder-q">{{ rung.question }}</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <nav class="illness-phase-nav" aria-label="Story builder steps">
+        {% for phase in story_phases %}
+        <button type="button" class="illness-phase-tab{% if loop.first %} is-active{% endif %}" data-phase="{{ phase.id }}">
+          <span class="illness-phase-icon">{{ phase.icon }}</span>
+          <span class="illness-phase-label">{{ phase.label }}</span>
+          <span class="illness-phase-dot" aria-hidden="true"></span>
+        </button>
+        {% endfor %}
+      </nav>
+
+      <div class="illness-phase-coach" id="illness-phase-coach" aria-live="polite">
+        <span class="illness-phase-coach-icon">💡</span>
+        <p id="illness-phase-coach-text">{{ phase_coaching.shape }}</p>
+      </div>
+
+      <div class="illness-builder-layout">
+        <div class="illness-builder-main">
+
+          <section class="illness-phase-panel is-active" data-phase-panel="shape">
+            <h3 class="illness-phase-title">Choose your story shape</h3>
+            <p class="illness-phase-desc">Pick the frame that best matches your situation — it guides timelines, evidence, and the questions in the next steps.</p>
+            <div class="illness-type-picker">
+              <p class="illness-type-picker-lead">Which sounds most like you?</p>
+              <div class="illness-type-grid" role="radiogroup" aria-label="Story shape">
+                {% for t in story_types %}
+                <button
+                  type="button"
+                  class="illness-type-card has-term-tip"
+                  data-story-type="{{ t.id }}"
+                  data-term-tip="{{ t.hint }}"
+                  aria-pressed="false"
+                >
+                  <span class="illness-type-card-emoji" aria-hidden="true">{{ t.emoji }}</span>
+                  <span class="illness-type-card-label">{{ t.label }}</span>
+                  <span class="illness-type-card-tagline">{{ t.tagline }}</span>
+                </button>
+                {% endfor %}
+              </div>
+              <div id="illness-type-detail" class="illness-type-detail" hidden>
+                <div class="illness-type-detail-head">
+                  <span id="illness-type-detail-emoji" class="illness-type-detail-emoji" aria-hidden="true"></span>
+                  <div>
+                    <h4 id="illness-type-detail-title" class="illness-type-detail-title"></h4>
+                    <p id="illness-type-detail-good" class="illness-type-detail-good"></p>
+                  </div>
+                </div>
+                <div class="illness-type-detail-box">
+                  <strong>What to capture next</strong>
+                  <p id="illness-type-detail-capture"></p>
+                </div>
+                <p id="illness-type-detail-insurer" class="illness-type-detail-insurer"></p>
+                <p id="illness-type-detail-example" class="illness-type-detail-example"></p>
+                <div class="illness-type-detail-actions">
+                  <button type="button" class="ac-btn ac-btn-primary ac-btn-small" id="illness-type-continue">Continue to onset &amp; symptoms →</button>
+                  <button type="button" class="ac-btn ac-btn-secondary ac-btn-small" id="illness-type-show-examples">See example openings</button>
+                </div>
+              </div>
+            </div>
+            <p class="illness-type-hint" id="illness-type-hint" aria-live="polite" hidden></p>
+            <div class="illness-confusion-grid">
+              {% for g in confusion_guards %}
+              <a href="{{ url_for('resources_confusion_detail', slug=g.slug) }}" class="illness-confusion-card has-term-tip" data-term-tip="{{ g.tip }}" target="_blank" rel="noopener">
+                <span class="illness-confusion-pair"><strong>{{ g.left }}</strong> ≠ {{ g.right }}</span>
+                <p>{{ g.tip }}</p>
+                <span class="illness-confusion-drill">Learn more →</span>
+              </a>
+              {% endfor %}
+            </div>
+            <details class="illness-examples" id="illness-examples">
+              <summary>See example story openings (not your claim — inspiration only)</summary>
+              <div class="illness-examples-body" id="illness-examples-body">
+                <p class="illness-examples-lead">Select a story shape above to see tailored examples.</p>
+              </div>
+            </details>
+          </section>
+
+          <section class="illness-phase-panel" data-phase-panel="onset" hidden>
+            <h3 class="illness-phase-title">Onset &amp; symptoms</h3>
+            <p class="illness-phase-desc">Tap symptoms that apply, then open prompt cards to add detail with your own words.</p>
+            {% for group in symptom_groups %}
+            <div class="illness-symptom-group">
+              <span class="illness-symptom-group-label">{{ group.label }}</span>
+              <div class="illness-symptom-chips" data-group="{{ group.id }}">
+                {% for chip in group.chips %}
+                <button type="button" class="illness-symptom-chip has-term-tip" data-symptom="{{ chip.label }}" data-term-tip="{{ chip.description }}" title="">{{ chip.label }}</button>
+                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+            <button type="button" class="ac-btn ac-btn-secondary ac-btn-small" id="illness-add-symptoms">Add selected symptoms to story</button>
+
+            <div class="illness-timeline-capture" id="illness-timeline-capture">
+              <div class="timeline-capture-header">
+                <strong>Quick timeline</strong>
+                <p class="illness-phase-desc timeline-capture-lead">
+                  These three dates are <em>often different</em> — capture each separately.
+                  Pick an <strong>exact date</strong> when you know it, or <strong>month / year (approx)</strong> when you are unsure.
+                </p>
+              </div>
+              <div class="illness-timeline-fields">
+                {% for tf in timeline_capture_fields %}
+                <div class="field timeline-date-field" data-timeline-id="{{ tf.id }}" data-sync-field="{{ tf.sync_field }}" data-default-precision="{{ tf.default_precision }}">
+                  <div class="timeline-date-label-row">
+                    <label for="tl-precision-{{ tf.id }}">{{ tf.label }}</label>
+                    <button type="button" class="field-help-btn has-term-tip" data-term-tip="{{ tf.hint }}" aria-label="Explain {{ tf.label }}">?</button>
+                  </div>
+                  <select id="tl-precision-{{ tf.id }}" class="timeline-precision" aria-label="{{ tf.label }} — date precision">
+                    <option value="exact">Exact date</option>
+                    <option value="month"{% if tf.default_precision == 'month' %} selected{% endif %}>Month &amp; year (approx)</option>
+                    <option value="year">Year only (approx)</option>
+                  </select>
+                  <div class="timeline-pickers">
+                    <div class="timeline-picker timeline-picker-exact"{% if tf.default_precision != 'exact' %} hidden{% endif %}>
+                      <input type="date" class="timeline-date-exact" id="tl-exact-{{ tf.id }}" aria-label="{{ tf.label }} — exact date">
+                    </div>
+                    <div class="timeline-picker timeline-picker-month"{% if tf.default_precision != 'month' %} hidden{% endif %}>
+                      <select class="timeline-month" id="tl-month-{{ tf.id }}" aria-label="{{ tf.label }} — month">
+                        <option value="">Month…</option>
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                      </select>
+                      <select class="timeline-year-month" id="tl-year-month-{{ tf.id }}" aria-label="{{ tf.label }} — year">
+                        <option value="">Year…</option>
+                      </select>
+                    </div>
+                    <div class="timeline-picker timeline-picker-year" hidden>
+                      <select class="timeline-year-only" id="tl-year-only-{{ tf.id }}" aria-label="{{ tf.label }} — year only">
+                        <option value="">Year…</option>
+                      </select>
+                    </div>
+                  </div>
+                  <p class="timeline-date-preview" id="tl-preview-{{ tf.id }}" aria-live="polite"></p>
+                </div>
+                {% endfor %}
+              </div>
+              <p id="illness-timeline-status" class="timeline-capture-status" aria-live="polite"></p>
+              <button type="button" class="ac-btn ac-btn-secondary ac-btn-small" id="illness-add-timeline">Add timeline to story</button>
+            </div>
+
+            <div class="illness-prompt-grid">
+              {% for card in illness_prompts if card.phase == 'onset' %}
+              <button type="button" class="illness-prompt-card illness-lane-{{ card.lane }}" data-prompt-id="{{ card.id }}" data-phase="{{ card.phase }}" data-template="{{ card.template }}" data-fields='{{ card.fields | tojson }}' title="Open guided prompt">
+                <span class="illness-prompt-lane">{{ card.lane }}</span>
+                <strong>{{ card.title }}</strong>
+                <span class="illness-prompt-ph">{{ card.placeholder }}</span>
+              </button>
+              {% endfor %}
+            </div>
+          </section>
+
+          <section class="illness-phase-panel medical-record-panel" id="section-medical-record" data-phase-panel="medical" hidden>
+            <h3 class="illness-phase-title">Medical record layer</h3>
+            <p class="illness-phase-desc">Structured medical facts — diagnosis with ICD-10, medications, and {% if juris.code == 'au' %}Medicare / private health insurance{% else %}medical aid{% endif %} history. Keeps clinical language separate from your everyday symptom story.</p>
+            {% if juris.code == 'au' %}
+            <div class="medical-record-block" id="my-health-record-placeholder">
+              <div class="medical-record-block-head">
+                <strong>My Health Record</strong>
+                <span class="label-tag">AU · forthcoming</span>
+              </div>
+              <p class="field-hint">
+                Placeholder — possibility of linking
+                <a href="https://www.digitalhealth.gov.au/initiatives-and-programs/my-health-record" target="_blank" rel="noopener noreferrer">My Health Record</a>
+                (Australian Digital Health Agency) so diagnoses, prescriptions, and certificates
+                can be pulled into this step instead of typed. Recorded on Core AU and the
+                development work-in-progress list. Not connected yet.
+              </p>
+            </div>
+            {% endif %}
+
+            <input type="hidden" name="medical_diagnoses_json" id="medical_diagnoses_json" value="{{ claim.medical_diagnoses_json if claim and claim.medical_diagnoses_json else '' }}">
+            <input type="hidden" name="medical_medications_json" id="medical_medications_json" value="{{ claim.medical_medications_json if claim and claim.medical_medications_json else '' }}">
+
+            <div class="medical-record-block">
+              <div class="medical-record-block-head">
+                <strong>Diagnoses</strong>
+                <span class="label-tag tag-medical">ICD-10 auto-fill</span>
+              </div>
+              <p class="field-hint">Start typing a diagnosis — ICD-10 code fills automatically. Add every working and confirmed diagnosis from certificates or specialist letters.</p>
+              <div id="medical-diagnosis-rows" class="medical-diagnosis-rows" aria-live="polite"></div>
+              <button type="button" class="ac-btn ac-btn-secondary ac-btn-small" id="medical-add-diagnosis">+ Add diagnosis</button>
+              <button type="button" class="ac-btn ac-btn-secondary ac-btn-small" id="medical-sync-diagnoses">Add diagnoses to illness story</button>
+            </div>
+
+            <div class="medical-record-block">
+              <div class="medical-record-block-head">
+                <strong>Medications &amp; treatment</strong>
+                <span class="label-tag tag-medical">tap to add</span>
+              </div>
+              <p class="field-hint">Select from common SA prescriptions or search — then pick the <strong>strength on your script</strong>, how often you take it, and an optional comment. Manual strength entry is available if yours is not listed.</p>
+              <div class="medical-med-search field">
+                <label for="medical-med-search">Search medications</label>
+                <input type="text" id="medical-med-search" placeholder="e.g. Cipralex, Lyrica, amitriptyline…" autocomplete="off">
+                <ul id="medical-med-suggestions" class="medical-med-suggestions" role="listbox" hidden></ul>
+              </div>
+              <div id="medical-med-chips" class="medical-med-chips"></div>
+              <ul id="medical-med-list" class="medical-med-list" aria-live="polite"></ul>
+              <button type="button" class="ac-btn ac-btn-secondary ac-btn-small" id="medical-sync-meds">Add medications to illness story</button>
+            </div>
+
+            <div class="medical-record-block medical-aid-block">
+              <p class="field-hint">
+                {% if juris.code == 'au' %}
+                Your income-protection or group disability policy is separate from
+                Medicare and any private health cover. Capture that history here
+                when a claim, waiting period, or gap payment affects your evidence
+                pack — but the incapacity test still comes from your policy wording.
+                {% else %}
+                Your income-protection or group disability policy is separate from
+                this medical scheme. Capture scheme membership here when PMB disputes,
+                chronic authorisations, or co-payments affect your evidence pack —
+                but the incapacity test still comes from your policy wording.
+                {% endif %}
+              </p>
+              <div class="medical-record-block-head">
+                <label class="label-with-help" for="medical_aid_history_note">
+                  {{ medical_aid_help.title }}
+                  <span class="policy-hint-wrap field-help-wrap">
+                    <button type="button" class="policy-hint-btn" aria-label="{{ medical_aid_help.title }} help">?</button>
+                    <span class="policy-hint-popover field-help-popover medical-aid-help-popover" role="tooltip">
+                      <strong>{{ medical_aid_help.title }}</strong>
+                      <p class="policy-hint-guidance">{{ medical_aid_help.how_to }}</p>
+                      <p class="policy-hint-guidance"><strong>What this helps with:</strong></p>
+                      <ul class="medical-aid-help-list">
+                        {% for item in medical_aid_help.helps_with %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                      </ul>
+                    </span>
+                  </span>
+                </label>
+                <span class="label-tag tag-medical">upload or type</span>
+              </div>
+              <div class="medical-aid-dual">
+                <div class="medical-aid-upload">
+                  <input type="file" name="medical_aid_history" id="medical_aid_history" multiple accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,.csv,.xlsx" class="visually-hidden-input">
+                  <button type="button" class="ac-btn ac-btn-primary ac-btn-small" id="medical-aid-open">Upload {{ juris.salary_labels.health|lower }} history…</button>
+                  <p class="upload-formats">PDF, Excel, CSV, or screenshot export · max 32 MB each</p>
+                  <p class="job-spec-preview-count" id="medical-aid-preview-count" hidden></p>
+                  <ul class="job-spec-preview-list" id="medical-aid-preview-list" aria-live="polite"></ul>
+                  {% if medical_aid_docs %}
+                  <div class="uploaded-job-specs">
+                    <strong>Already uploaded</strong>
+                    <ul>
+                      {% for doc in medical_aid_docs %}
+                      <li>
+                        <span>{{ doc.original_name }}</span>
+                        <span class="uploaded-date">{{ doc.uploaded_at[:10] }}</span>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="medical-aid-manual field">
+                  <label for="medical_aid_history_note">Manual summary (optional)</label>
+                  <textarea name="medical_aid_history_note" id="medical_aid_history_note" rows="5" placeholder="{% if juris.code == 'au' %}e.g. Medicare Safety Net threshold reached 2022; hospital admission Aug 2024; private health claims ref 12345…{% else %}e.g. Discovery chronic auth for MDD from 2022; hospital admission Aug 2024; CAMAF claims ref 12345…{% endif %}">{{ claim.medical_aid_history_note if claim else '' }}</textarea>
+                </div>
+              </div>
+            </div>
+
+            <details class="medical-prompt-details">
+              <summary>Guided prompt cards (onset, certificates, side effects)</summary>
+              <div class="illness-prompt-grid">
+                {% for card in illness_prompts if card.phase == 'medical' %}
+                <button type="button" class="illness-prompt-card illness-lane-{{ card.lane }}" data-prompt-id="{{ card.id }}" data-phase="{{ card.phase }}" data-template="{{ card.template }}" data-fields='{{ card.fields | tojson }}' title="Open guided prompt">
+                  <span class="illness-prompt-lane">{{ card.lane }}</span>
+                  <strong>{{ card.title }}</strong>
+                  <span class="illness-prompt-ph">{{ card.placeholder }}</span>
+                </button>
+                {% endfor %}
+              </div>
+            </details>
+          </section>
+
+          <section class="illness-phase-panel" data-phase-panel="compose" hidden>
+            <h3 class="illness-phase-title">Review &amp; edit your story</h3>
+            <p class="illness-phase-desc">This text saves to your claim profile. Refine until each quality check is green.</p>
+            <label for="illness_summary">Your illness / injury story</label>
+            <textarea name="illness_summary" id="illness_summary" rows="10" placeholder="Use the steps above — insurers need onset, symptoms, medical sources, and how they stop your material duties.">{{ claim.illness_summary if claim else '' }}</textarea>
+            <ul class="illness-quality" id="illness-quality" aria-live="polite"></ul>
+            <div class="illness-bridge-box">
+              <strong>Policy bridge</strong> — Everyday <em>illness</em> becomes a claim only when linked to <em>incapacity for material duties</em>.
+              <a href="{{ url_for('resources_language_map') }}#term-incapacity">Incapacity →</a>
+              · <a href="{{ url_for('resources_language_map') }}#term-illness">Illness →</a>
+            </div>
+          </section>
+
+        </div>
+
+        <aside class="illness-builder-side">
+          <div class="illness-side-card">
+            <strong>Date ladder</strong>
+            <p class="illness-side-lead">Capture these in <a href="#section-dates">Key dates</a> — they are rarely the same day.</p>
+            <ol class="illness-date-ladder">
+              {% for item in date_ladder %}
+              <li>
+                <a href="#{{ item.id }}">{{ item.label }}</a>
+                <span>{{ item.hint }}</span>
+              </li>
+              {% endfor %}
+            </ol>
+          </div>
+          <div class="illness-side-card">
+            <strong>Live preview</strong>
+            <div id="illness-preview" class="illness-preview" aria-live="polite">
+              <p class="illness-preview-empty">Your story preview will appear here as you build.</p>
+            </div>
+          </div>
+          <div class="illness-side-card illness-domain-ref">
+            <strong>Functional areas</strong>
+            <p class="illness-side-lead">Open the functional-capacity module to map duty impact per area.</p>
+            <ul class="illness-domain-ref-list">
+              {% for d in illness_domains %}
+              <li>
+                {% if claim is defined and claim %}
+                <a href="{{ url_for('functional_capacity', claim_id=claim.id, domain=d.id) }}" class="illness-domain-ref-btn illness-domain-ref-link">
+                  <span>{{ d.icon }}</span> <strong>{{ d.label }}</strong>
+                  <span class="illness-domain-ref-hint">{{ d.illness_link }}</span>
+                </a>
+                {% else %}
+                <span class="illness-domain-ref-btn illness-domain-ref-static">
+                  <span>{{ d.icon }}</span> <strong>{{ d.label }}</strong>
+                  <span class="illness-domain-ref-hint">{{ d.illness_link }}</span>
+                </span>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+            {% if claim is defined and claim %}
+            <p style="margin-top:0.75rem;"><a href="{{ url_for('functional_capacity', claim_id=claim.id) }}">Open builder →</a></p>
+            {% endif %}
+          </div>
+          {% if fc_view and fc_view.row_count %}
+          <div class="illness-side-card">
+            <strong>Duty links ({{ fc_view.row_count }})</strong>
+            <ul class="duty-impact-side-list">
+              {% for row in fc_view.rows[:6] %}
+              <li>{{ row.domain_label or row.domain }}: {{ row.symptom }} → {{ row.duty }}</li>
+              {% endfor %}
+            </ul>
+            {% if claim is defined and claim %}
+            <p style="margin-top:0.5rem;"><a href="{{ url_for('functional_capacity', claim_id=claim.id) }}">Edit in builder →</a></p>
+            {% endif %}
+          </div>
+          {% endif %}
+        </aside>
+      </div>
+
+      <footer class="illness-phase-footer">
+        <button type="button" class="ac-btn ac-btn-secondary" id="illness-phase-prev" disabled>← Previous</button>
+        <button type="button" class="ac-btn ac-btn-primary" id="illness-phase-next">Next step →</button>
+      </footer>
+    </div>
+
+    <script type="application/json" id="illness-story-config">
+      {{ {
+        "phase_coaching": phase_coaching,
+        "story_examples": story_examples,
+        "domains": illness_domains,
+        "ladder_lanes": ["everyday", "medical", "functional", "policy"],
+        "symptom_definitions": symptom_definitions,
+        "story_types": story_types
+      } | tojson }}
+    </script>
+
+    <div id="illness-prompt-backdrop" class="modal-backdrop" hidden></div>
+    <div id="illness-prompt-modal" class="job-spec-modal illness-prompt-modal" role="dialog" aria-modal="true" aria-labelledby="illness-prompt-title" hidden>
+      <div class="job-spec-modal-inner">
+        <header class="job-spec-modal-header">
+          <h2 id="illness-prompt-title">Add to your story</h2>
+          <button type="button" class="modal-close" id="illness-prompt-close" aria-label="Close">×</button>
+        </header>
+        <p class="job-spec-modal-lead" id="illness-prompt-lead"></p>
+        <div id="illness-prompt-fields" class="illness-prompt-fields"></div>
+        <p class="illness-prompt-preview-label">Preview</p>
+        <p id="illness-prompt-preview" class="illness-prompt-preview-text"></p>
+        <footer class="job-spec-modal-footer">
+          <button type="button" class="ac-btn ac-btn-secondary" id="illness-prompt-cancel">Cancel</button>
+          <button type="button" class="ac-btn ac-btn-primary" id="illness-prompt-add">Add to story</button>
+        </footer>
+      </div>
+    </div>
+    <div class="claim-evidence-flags" id="claim-evidence-flags">
+      <div class="claim-evidence-flags-head">
+        <strong>Medical evidence signals</strong>
+        <span class="label-tag tag-medical">optional</span>
+      </div>
+      <p class="claim-evidence-flags-lead">
+        Tick only what applies to <strong>this claim</strong>. ClaimBuddy uses these to prioritise documents on your evidence list and surface relevant insurer traps on your dashboard.
+      </p>
+
+      <div class="claim-evidence-flag">
+        <input type="checkbox" name="hospital_admission" id="hospital_admission" class="claim-evidence-flag-check" {% if flags is defined and 'hospital_admission' in flags %}checked{% endif %}>
+        <div class="claim-evidence-flag-body">
+          <label for="hospital_admission" id="label-hospital_admission" class="claim-evidence-flag-title checkbox-label-with-hint">
+            <span class="checkbox-label-text">Hospital admission during this claim</span>
+            <span class="policy-hint-wrap field-help-wrap" data-static-help="true">
+              <button type="button" class="policy-hint-btn" aria-label="Hospital admission help">?</button>
+              <span class="policy-hint-popover field-help-popover" id="hospital_admission-hint-popover" role="tooltip">
+                <strong>When to tick</strong>
+                <p class="policy-hint-guidance">You were admitted to hospital, had day-case surgery, or received inpatient treatment linked to this incapacity — even one night counts.</p>
+                <p class="policy-hint-guidance"><strong>What ClaimBuddy does:</strong> Adds hospital admission/discharge records to your evidence gaps and flags the <em>diagnosis trap</em> — insurers sometimes lean on hospital labels instead of whether you can perform your occupation.</p>
+              </span>
+            </span>
+          </label>
+          <p class="claim-evidence-flag-desc" id="hospital_admission-desc" data-default-desc="Adds hospital admission and discharge summaries to your evidence pack.">Adds hospital admission and discharge summaries to your evidence pack.</p>
+        </div>
+      </div>
+
+      <div class="claim-evidence-flag">
+        <input type="checkbox" name="specialist_required" id="specialist_required" class="claim-evidence-flag-check" {% if flags is defined and 'specialist_required' in flags %}checked{% endif %}>
+        <div class="claim-evidence-flag-body">
+          <label for="specialist_required" id="label-specialist_required" class="claim-evidence-flag-title checkbox-label-with-hint">
+            <span class="checkbox-label-text">Specialist evidence requested or likely needed</span>
+            <span class="policy-hint-wrap field-help-wrap" data-static-help="true">
+              <button type="button" class="policy-hint-btn" aria-label="Specialist evidence help">?</button>
+              <span class="policy-hint-popover field-help-popover" id="specialist_required-hint-popover" role="tooltip">
+                <strong>When to tick</strong>
+                <p class="policy-hint-guidance">The insurer has asked for a specialist report, IME, or second opinion — or your policy wording / assessor notes suggest consultant-level evidence will be required.</p>
+                <p class="policy-hint-guidance"><strong>What ClaimBuddy does:</strong> Prioritises specialist letters on your evidence list and flags the <em>specialist-evidence trap</em> — clarify exactly what was requested, who must provide it, and whether your treating specialist has already covered it.</p>
+              </span>
+            </span>
+          </label>
+          <p class="claim-evidence-flag-desc" id="specialist_required-desc" data-default-desc="Covers insurer requests, IME referrals, and consultant reports — not routine GP sick notes alone.">Covers insurer requests, IME referrals, and consultant reports — not routine GP sick notes alone.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section intake-screen" id="section-salary" data-intake-step="5" hidden>
+    <h2>6. Salary, deductions &amp; payslips</h2>
+    <p class="field-hint">Earnings and deductions affect benefit calculations, tax, and offsets. Enter what you know <em>or</em> upload payslips (6–12 months is ideal).</p>
+    <div class="salary-panel">
+      <div class="salary-panel-fields">
+        <div class="ra-grid-2">
+          <div class="field">
+            <label for="gross_salary">{{ juris.salary_labels.gross }}</label>
+            <input type="text" name="gross_salary" id="gross_salary" class="currency-input" value="{{ claim.gross_salary if claim else '' }}" placeholder="{{ juris.currency_symbol }}85,000" pattern="{{ juris.currency_pattern_symbol }}[0-9,]+" title="Format: {{ juris.currency_symbol }}85,000">
+          </div>
+          <div class="field">
+            <label for="net_salary">{{ juris.salary_labels.net }} (take-home)</label>
+            <input type="text" name="net_salary" id="net_salary" class="currency-input" value="{{ claim.net_salary if claim else '' }}" placeholder="{{ juris.currency_symbol }}58,200" pattern="{{ juris.currency_pattern_symbol }}[0-9,]+" title="Format: {{ juris.currency_symbol }}58,200">
+          </div>
+          <div class="field">
+            <label for="pay_frequency">Pay frequency</label>
+            <select name="pay_frequency" id="pay_frequency">
+              <option value="">— select —</option>
+              {% for val, label in [('monthly', 'Monthly'), ('weekly', 'Weekly'), ('biweekly', 'Bi-weekly / fortnightly'), ('annual', 'Annual'), ('other', 'Other')] %}
+              <option value="{{ val }}" {% if claim and claim.pay_frequency == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="field">
+            <label for="earnings_basis">Earnings basis</label>
+            <select name="earnings_basis" id="earnings_basis">
+              <option value="">— select —</option>
+              {% for val, label in [('basic', 'Basic salary only'), ('package', 'Total cost to company / package'), ('commission', 'Commission-heavy / variable'), ('unsure', 'Not sure — check payslip or HR')] %}
+              <option value="{{ val }}" {% if claim and claim.earnings_basis == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="field">
+            <label for="benefit_percent">Insured benefit %</label>
+            <input name="benefit_percent" id="benefit_percent" value="{{ claim.benefit_percent if claim else '' }}" placeholder="e.g. 75%">
+          </div>
+        </div>
+        <p class="deductions-heading">Monthly deductions (if known)</p>
+        <p class="field-hint currency-format-hint">Amounts use <strong>{{ juris.currency_symbol }}</strong> + commas — e.g. <code>{{ juris.currency_symbol }}85,000</code>. Type digits only; formatting applies as you type.</p>
+        <div class="ra-grid-2">
+          <div class="field">
+            <label for="tax_deductions">{{ juris.salary_labels.tax }}</label>
+            <input type="text" name="tax_deductions" id="tax_deductions" class="currency-input" value="{{ claim.tax_deductions if claim else '' }}" placeholder="{{ juris.currency_symbol }}18,500" pattern="{{ juris.currency_pattern_symbol }}[0-9,]+" title="Format: {{ juris.currency_symbol }}18,500">
+          </div>
+          <div class="field">
+            <label for="pension_deductions">{{ juris.salary_labels.pension }}</label>
+            <input type="text" name="pension_deductions" id="pension_deductions" class="currency-input" value="{{ claim.pension_deductions if claim else '' }}" placeholder="{{ juris.currency_symbol }}4,250" pattern="{{ juris.currency_pattern_symbol }}[0-9,]+" title="Format: {{ juris.currency_symbol }}4,250">
+          </div>
+          <div class="field">
+            <label for="medical_aid_deductions">{{ juris.salary_labels.health }}</label>
+            <input type="text" name="medical_aid_deductions" id="medical_aid_deductions" class="currency-input" value="{{ claim.medical_aid_deductions if claim else '' }}" placeholder="{{ juris.currency_symbol }}3,800" pattern="{{ juris.currency_pattern_symbol }}[0-9,]+" title="Format: {{ juris.currency_symbol }}3,800">
+          </div>
+          <div class="field">
+            <label for="uif_deductions">{{ juris.salary_labels.statutory }}</label>
+            <input type="text" name="uif_deductions" id="uif_deductions" class="currency-input" value="{{ claim.uif_deductions if claim else '' }}" placeholder="{{ juris.currency_symbol }}177" pattern="{{ juris.currency_pattern_symbol }}[0-9,]+" title="Format: {{ juris.currency_symbol }}177">
+          </div>
+          <div class="field">
+            <label for="other_deductions">Other deductions</label>
+            <input name="other_deductions" id="other_deductions" value="{{ claim.other_deductions if claim else '' }}" placeholder="e.g. garnishee, union, loan repayment">
+          </div>
+        </div>
+        <div class="field">
+          <label for="salary_notes">Deduction / earnings notes</label>
+          <textarea name="salary_notes" id="salary_notes" rows="3" placeholder="e.g. Bonus in March; car allowance {{ juris.currency_symbol }}8k; employer pays {{ juris.salary_labels.health|lower }}; commission averaged over 12 months…">{{ claim.salary_notes if claim else '' }}</textarea>
+        </div>
+      </div>
+      <div class="salary-panel-upload">
+        <label>Payslips <span class="label-tag tag-policy">upload</span></label>
+        <div class="upload-compact">
+          <p class="upload-dropzone-desc">Upload recent payslips or payroll statements — ideally 6–12 months before and during absence.</p>
+          <input type="file" name="payslip" id="payslip" multiple accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" class="visually-hidden-input">
+          <button type="button" class="ac-btn ac-btn-primary" id="payslip-open">Browse or drop payslips…</button>
+          <p class="upload-formats">PDF, Word, text, or image · max 32 MB each</p>
+          <p class="job-spec-preview-count" id="payslip-preview-count" hidden></p>
+          <ul class="job-spec-preview-list" id="payslip-preview-list" aria-live="polite"></ul>
+          <p class="job-spec-preview-empty" id="payslip-preview-empty">No payslips selected yet.</p>
+        </div>
+        <div class="field" style="margin-top:0.75rem;">
+          <label for="payslip_note">Payslip note (optional)</label>
+          <input type="text" name="payslip_note" id="payslip_note" placeholder="e.g. Jan–Jun 2025 payroll from Deloitte">
+        </div>
+        {% if payslips %}
+        <div class="uploaded-job-specs">
+          <strong>Already uploaded</strong>
+          <ul>
+            {% for doc in payslips %}
+            <li>
+              <span>{{ doc.original_name }}</span>
+              <span class="uploaded-date">{{ doc.uploaded_at[:10] }}</span>
+              {% if editing %}
+              <form method="post" action="{{ url_for('delete_document', doc_id=doc.id) }}" class="inline-remove">
+                <input type="hidden" name="next" value="edit">
+                <button type="submit" class="ac-btn ac-btn-danger ac-btn-tiny">Remove</button>
+              </form>
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section intake-screen" id="section-dates" data-intake-step="6" hidden>
+    <p class="cb-step-eyebrow">Step 7 of 8</p><h2>Build the claim clock</h2>
+    <div class="ra-grid-2">
+      <div class="field"><label for="symptom_onset">Symptom onset</label><input type="date" name="symptom_onset" id="symptom_onset" value="{{ claim.symptom_onset if claim else '' }}"></div>
+      <div class="field"><label for="date_of_absence">Date of Absence (your understanding)</label><input type="date" name="date_of_absence" id="date_of_absence" value="{{ claim.date_of_absence if claim else '' }}"></div>
+      <div class="field"><label for="insurer_doa">Insurer-stated DOA (if different)</label><input name="insurer_doa" id="insurer_doa" value="{{ claim.insurer_doa if claim else '' }}"></div>
+      <div class="field"><label for="first_medical_cert">First medical certificate</label><input type="date" name="first_medical_cert" id="first_medical_cert" value="{{ claim.first_medical_cert if claim else '' }}"></div>
+      <div class="field"><label for="first_notice">First notice to employer/insurer</label><input type="date" name="first_notice" id="first_notice" value="{{ claim.first_notice if claim else '' }}"></div>
+      <div class="field"><label for="form_submission">Form submission</label><input type="date" name="form_submission" id="form_submission" value="{{ claim.form_submission if claim else '' }}"></div>
+      <div class="field"><label for="complete_claim">Complete claim confirmed</label><input type="date" name="complete_claim" id="complete_claim" value="{{ claim.complete_claim if claim else '' }}"></div>
+      <div class="field"><label for="rejection_date">Rejection date</label><input type="date" name="rejection_date" id="rejection_date" value="{{ claim.rejection_date if claim else '' }}"></div>
+      <div class="field"><label for="review_deadline">Review deadline</label><input type="date" name="review_deadline" id="review_deadline" value="{{ claim.review_deadline if claim else '' }}"></div>
+      <div class="field"><label for="ombud_deadline">Ombud deadline</label><input type="date" name="ombud_deadline" id="ombud_deadline" value="{{ claim.ombud_deadline if claim else '' }}"></div>
+    </div>
+  </div>
+
+  <div class="form-section intake-screen" id="section-notes" data-intake-step="7" hidden>
+    <p class="cb-step-eyebrow">Step 8 of 8</p><h2>Add context that does not fit elsewhere</h2>
+    <div class="field"><label for="notes">Record-access status / other notes</label><textarea name="notes" id="notes">{{ claim.notes if claim else '' }}</textarea></div>
+    <div class="field"><label>Record access status</label><input name="record_access_status" value="{{ claim.record_access_status if claim else '' }}" placeholder="e.g. PAIA sent 10 Jun, no response"></div>
+  </div>
+
+  </div>
+
+  <footer class="intake-step-footer">
+    <button type="button" class="ac-btn ac-btn-secondary" id="intake-step-prev" disabled>← Previous</button>
+    <div class="intake-step-footer-end">
+      <button type="button" class="ac-btn ac-btn-primary" id="intake-step-next">Next →</button>
+      <button type="submit" class="ac-btn ac-btn-primary" id="intake-step-submit" hidden>{% if editing %}Save changes{% else %}Create workspace{% endif %}</button>
+      {% if editing %}
+      <a href="{{ url_for('dashboard', claim_id=claim.id) }}" class="ac-btn ac-btn-secondary">Cancel</a>
+      {% endif %}
+    </div>
+  </footer>
+</form>
+
+<div id="duties-prompt-backdrop" class="modal-backdrop" hidden></div>
+<div id="duties-prompt-modal" class="job-spec-modal duties-prompt-modal" role="dialog" aria-modal="true" aria-labelledby="duties-prompt-heading" hidden>
+  <div class="job-spec-modal-inner">
+    <header class="job-spec-modal-header">
+      <h2 id="duties-prompt-heading">Populate material duties?</h2>
+      <button type="button" class="modal-close" id="duties-prompt-close" aria-label="Close">×</button>
+    </header>
+    <p class="job-spec-modal-lead">
+      You selected <strong id="duties-prompt-title">this occupation</strong> from the ESCO database.
+    </p>
+    <p id="duties-prompt-summary" class="duties-prompt-summary"></p>
+    <p class="duties-prompt-note">The draft lists typical duties and skills. Next you will <strong>tick or correct</strong> plain-language terms and confirm what the role broadly requires — insurers test material duties, not just your title.</p>
+    <footer class="job-spec-modal-footer duties-prompt-actions">
+      <button type="button" class="ac-btn ac-btn-secondary" id="duties-prompt-no">No thanks</button>
+      <button type="button" class="ac-btn ac-btn-secondary" id="duties-prompt-append" hidden>Append to existing</button>
+      <button type="button" class="ac-btn ac-btn-primary" id="duties-prompt-yes">Yes, populate duties</button>
+    </footer>
+  </div>
+</div>
+
+<div id="payslip-modal-backdrop" class="modal-backdrop" hidden></div>
+<div id="payslip-modal" class="job-spec-modal" role="dialog" aria-modal="true" aria-labelledby="payslip-modal-title" hidden>
+  <div class="job-spec-modal-inner">
+    <header class="job-spec-modal-header">
+      <h2 id="payslip-modal-title">Add payslip files</h2>
+      <button type="button" class="modal-close" id="payslip-close" aria-label="Close">×</button>
+    </header>
+    <p class="job-spec-modal-lead">Select or drag and drop payslips or payroll statements. Add multiple months if you have them.</p>
+    <div class="modal-dropzone" id="payslip-dropzone">
+      <div class="modal-dropzone-icon">🧾</div>
+      <p class="modal-dropzone-title">Drag &amp; drop payslips here</p>
+      <p class="modal-dropzone-or">or</p>
+      <button type="button" class="ac-btn ac-btn-secondary" id="payslip-browse">Browse your computer</button>
+      <p class="upload-formats">PDF · Word · text · PNG · JPG · max 32 MB each</p>
+    </div>
+    <div class="job-spec-modal-files">
+      <h3>Selected for upload</h3>
+      <ul id="payslip-modal-list"></ul>
+    </div>
+    <footer class="job-spec-modal-footer">
+      <button type="button" class="ac-btn ac-btn-primary" id="payslip-done">Done</button>
+    </footer>
+  </div>
+</div>
+
+<div id="policy-modal-backdrop" class="modal-backdrop" hidden></div>
+<div id="policy-modal" class="job-spec-modal" role="dialog" aria-modal="true" aria-labelledby="policy-modal-title" hidden>
+  <div class="job-spec-modal-inner">
+    <header class="job-spec-modal-header">
+      <h2 id="policy-modal-title">Add policy files</h2>
+      <button type="button" class="modal-close" id="policy-close" aria-label="Close">×</button>
+    </header>
+    <p class="job-spec-modal-lead">Select or drag and drop your policy wording, schedule, or member booklet. Analysis runs when you add files.</p>
+    <div class="modal-dropzone" id="policy-dropzone">
+      <div class="modal-dropzone-icon">📋</div>
+      <p class="modal-dropzone-title">Drag &amp; drop policy here</p>
+      <p class="modal-dropzone-or">or</p>
+      <button type="button" class="ac-btn ac-btn-secondary" id="policy-browse">Browse your computer</button>
+      <p class="upload-formats">PDF · Word · text · max 32 MB each</p>
+    </div>
+    <div class="job-spec-modal-files">
+      <h3>Selected for upload</h3>
+      <ul id="policy-modal-list"></ul>
+    </div>
+    <footer class="job-spec-modal-footer">
+      <button type="button" class="ac-btn ac-btn-primary" id="policy-done">Done</button>
+    </footer>
+  </div>
+</div>
+
+<div id="medical-aid-modal-backdrop" class="modal-backdrop" hidden></div>
+<div id="medical-aid-modal" class="job-spec-modal" role="dialog" aria-modal="true" aria-labelledby="medical-aid-modal-title" hidden>
+  <div class="job-spec-modal-inner">
+    <header class="job-spec-modal-header">
+      <h2 id="medical-aid-modal-title">Add {{ medical_aid_help.title|lower }}</h2>
+      <button type="button" class="modal-close" id="medical-aid-close" aria-label="Close">×</button>
+    </header>
+    <p class="job-spec-modal-lead">Upload claims history, chronic medicine register, or hospital authorisation exports from your {{ juris.salary_labels.health|lower }} app or member services.</p>
+    <div class="modal-dropzone" id="medical-aid-dropzone">
+      <div class="modal-dropzone-icon">🏥</div>
+      <p class="modal-dropzone-title">Drag &amp; drop {{ juris.salary_labels.health|lower }} exports here</p>
+      <p class="modal-dropzone-or">or</p>
+      <button type="button" class="ac-btn ac-btn-secondary" id="medical-aid-browse">Browse your computer</button>
+      <p class="upload-formats">PDF · Excel · CSV · image · max 32 MB each</p>
+    </div>
+    <div class="job-spec-modal-files">
+      <h3>Selected for upload</h3>
+      <ul id="medical-aid-modal-list"></ul>
+    </div>
+    <footer class="job-spec-modal-footer">
+      <button type="button" class="ac-btn ac-btn-primary" id="medical-aid-done">Done</button>
+    </footer>
+  </div>
+</div>
+
+<div id="job-spec-modal-backdrop" class="modal-backdrop" hidden></div>
+<div id="job-spec-modal" class="job-spec-modal" role="dialog" aria-modal="true" aria-labelledby="job-spec-modal-title" hidden>
+  <div class="job-spec-modal-inner">
+    <header class="job-spec-modal-header">
+      <h2 id="job-spec-modal-title">Add job specification files</h2>
+      <button type="button" class="modal-close" id="job-spec-close" aria-label="Close">×</button>
+    </header>
+    <p class="job-spec-modal-lead">Select or drag and drop your job spec, position profile, or job ad. You can add multiple files.</p>
+    <div class="modal-dropzone" id="job-spec-dropzone">
+      <div class="modal-dropzone-icon">📁</div>
+      <p class="modal-dropzone-title">Drag &amp; drop files here</p>
+      <p class="modal-dropzone-or">or</p>
+      <button type="button" class="ac-btn ac-btn-secondary" id="job-spec-browse">Browse your computer</button>
+      <p class="upload-formats">PDF · Word · text · PNG · JPG · max 32 MB each</p>
+    </div>
+    <div class="job-spec-modal-files">
+      <h3>Selected for upload</h3>
+      <ul id="job-spec-modal-list"></ul>
+    </div>
+    <footer class="job-spec-modal-footer">
+      <button type="button" class="ac-btn ac-btn-primary" id="job-spec-done">Done</button>
+    </footer>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if policy_analysis %}
+<script id="policy-analysis-bootstrap" type="application/json">{{ policy_analysis | tojson }}</script>
+{% endif %}
+<script src="{{ url_for('static', filename='js/term-tooltips.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/timeline-capture.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/policy-plan.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/claim-stage.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/intake-wizard.js') }}" defer></script>
+<script>window.RA_CURRENCY_SYMBOL = {{ juris.currency_symbol | tojson }};</script>
+<script src="{{ url_for('static', filename='js/currency-input.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/waiting-period.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/insurer-select.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/party-autocomplete.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/illness-story.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/medical-record.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/medical-aid-browser.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/occupation-autocomplete.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/job-spec-browser.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/payslip-browser.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/policy-browser.js') }}" defer></script>
+{% endblock %}

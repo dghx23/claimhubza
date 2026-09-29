@@ -1,0 +1,67 @@
+<aside class="cb-workspace-rail" aria-label="Claim workspace">
+  <div class="cb-rail-claim">
+    <a class="cb-rail-back" href="{{ url_for('inbox') }}">← All claims</a>
+    <span>Current claim</span>
+    <strong>{{ claim.claimant_name or claim.claim_reference or ('Claim #' ~ claim.id) }}</strong>
+    <small>{{ stage_label or claim.claim_stage or 'In progress' }}{% if claim.insurer %} · {{ claim.insurer }}{% endif %}</small>
+  </div>
+
+  <nav class="workspace-nav" aria-label="Claim modules">
+    <div class="cb-nav-group">
+      <span class="cb-nav-label">Overview</span>
+      <a href="{{ url_for('dashboard', claim_id=claim.id) }}" class="{% if active == 'file' or active == 'dashboard' %}is-active{% endif %}"><span>01</span> My claim</a>
+    </div>
+
+    <div class="cb-nav-group">
+      <span class="cb-nav-label">Build the record</span>
+      <a href="{{ url_for('vault', claim_id=claim.id) }}" class="{% if active == 'vault' %}is-active{% endif %}"><span>02</span> My documents</a>
+      <a href="{{ url_for('policy_reader', claim_id=claim.id) }}" class="{% if active == 'policy' %}is-active{% endif %}"><span>03</span> My policy</a>
+      <a href="{{ url_for('functional_capacity', claim_id=claim.id) }}" class="{% if active == 'functional' %}is-active{% endif %}"><span>04</span> Function & duties</a>
+      <a href="{{ url_for('doctor', claim_id=claim.id) }}" class="{% if active == 'doctor' %}is-active{% endif %}"><span>05</span> Clinical questions</a>
+    </div>
+
+    <div class="cb-nav-group">
+      <span class="cb-nav-label">Review the claim</span>
+      <a href="{{ url_for('gaps', claim_id=claim.id) }}" class="{% if active == 'gaps' %}is-active{% endif %}"><span>06</span> Evidence gaps</a>
+      <a href="{{ url_for('rejection_explainer', claim_id=claim.id) }}" class="{% if active == 'rejection' %}is-active{% endif %}"><span>07</span> Decision / rejection</a>
+    </div>
+
+    <div class="cb-nav-group">
+      <span class="cb-nav-label">Prepare & share</span>
+      <a href="{{ url_for('letters', claim_id=claim.id) }}" class="{% if active == 'letters' %}is-active{% endif %}"><span>08</span> Letters</a>
+      <a href="{{ url_for('pack', claim_id=claim.id) }}" class="{% if active == 'pack' %}is-active{% endif %}"><span>09</span> My claim pack</a>
+      <a href="{{ url_for('claim_access', claim_id=claim.id) }}" class="{% if active == 'access' %}is-active{% endif %}"><span>10</span> Share access</a>
+    </div>
+
+    <div class="cb-nav-group cb-nav-group-secondary">
+      <span class="cb-nav-label">Claim settings</span>
+      <a href="{{ url_for('edit_claim', claim_id=claim.id) }}" class="{% if active == 'edit' %}is-active{% endif %}">My profile & intake</a>
+    </div>
+  </nav>
+
+  <div class="cb-rail-next">
+    {% if active in ('file','dashboard') %}
+      <span>Recommended next</span><a href="{{ url_for('vault', claim_id=claim.id) }}">Check documents →</a>
+    {% elif active == 'vault' %}
+      <span>Recommended next</span><a href="{{ url_for('policy_reader', claim_id=claim.id) }}">Read my policy →</a>
+    {% elif active == 'policy' %}
+      <span>Recommended next</span><a href="{{ url_for('functional_capacity', claim_id=claim.id) }}">Map function & duties →</a>
+    {% elif active == 'functional' %}
+      <span>Recommended next</span><a href="{{ url_for('doctor', claim_id=claim.id) }}">Prepare clinical questions →</a>
+    {% elif active == 'doctor' %}
+      <span>Recommended next</span><a href="{{ url_for('gaps', claim_id=claim.id) }}">Check evidence gaps →</a>
+    {% elif active == 'gaps' %}
+      <span>Recommended next</span><a href="{{ url_for('rejection_explainer', claim_id=claim.id) }}">Review a decision →</a>
+    {% elif active == 'rejection' %}
+      <span>Recommended next</span><a href="{{ url_for('letters', claim_id=claim.id) }}">Draft requests / review letter →</a>
+    {% elif active == 'letters' %}
+      <span>Recommended next</span><a href="{{ url_for('pack', claim_id=claim.id) }}">Review claim pack →</a>
+    {% elif active == 'pack' %}
+      <span>Recommended next</span><a href="{{ url_for('claim_access', claim_id=claim.id) }}">Share access →</a>
+    {% elif active == 'access' %}
+      <span>Back to the claim</span><a href="{{ url_for('dashboard', claim_id=claim.id) }}">Claim overview →</a>
+    {% else %}
+      <span>Continue</span><a href="{{ url_for('dashboard', claim_id=claim.id) }}">Claim overview →</a>
+    {% endif %}
+  </div>
+</aside>

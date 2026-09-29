@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block meta_description %}ClaimHub South Africa resource library{% endblock %}">
+  <title>{% block title %}ClaimHub Resources{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/riskatlas.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/compiler.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimsite.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimhub-resources.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimhub-resource-library.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimhub-system.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimhub-resources-theme.css') }}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="chr-app">
+  <header class="cs-nav chr-global-nav">
+    <a class="cs-brand" href="{{ url_for('claimsite_home') }}">
+      <span class="cs-brand-mark"><i></i><i></i><i></i><i></i></span>
+      <span><strong>ClaimHub</strong><small>People. Evidence. Fair Outcomes.</small></span>
+    </a>
+    <nav aria-label="ClaimHub">
+      <a href="{{ url_for('claimsite_home') }}">Home</a>
+      <a href="{{ url_for('claimsite_home') }}#connected">How it works</a>
+      <a class="is-active" href="{{ url_for('claimsite_resources') }}">Resources</a>
+      <a href="{{ url_for('claimhub.role_home', role='employer') }}">For employers</a>
+      <a href="{{ url_for('claimhub.role_home', role='adviser') }}">For advisers</a>
+      <a href="{{ url_for('inbox') }}">For claimants</a>
+      <a href="{{ url_for('claimsite_home') }}#sentrix">About</a>
+      <button type="button" class="chr-theme-toggle" data-chr-theme-toggle aria-pressed="false"><span data-theme-icon>☾</span><span data-theme-label>Dark</span></button>
+      <a class="cs-nav-primary" href="{{ url_for('inbox') }}">Start a claim</a>
+    </nav>
+  </header>
+
+  <div class="chr-productbar">
+    <a class="chr-productbrand" href="{{ url_for('claimsite_resources') }}">
+      <span class="chr-productmark">▣</span>
+      <span><strong>ClaimHub Resources</strong><small>Guides. Tools. Definitions. Support.</small></span>
+    </a>
+    {% include "resources/_nav.html" %}
+  </div>
+
+  <main class="chr-main">
+    <div class="chr-context-strip">
+      <span>Powered by RiskAtlas intelligence</span>
+      <strong>The library explains. ClaimBuddy and ClaimHub apply it to a live claim.</strong>
+      <a href="{{ url_for('claimsite_resources') }}">Browse all resources →</a>
+    </div>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="cs-footer">
+    <div><strong>ClaimHub Resources</strong><span>claimhub.co.za</span></div>
+    <p>Reference material supports understanding and organisation. It is not legal or medical advice.</p>
+    <a href="{{ url_for('claimsite_home') }}">Back to ClaimHub</a>
+  </footer>
+  {% block scripts %}{% endblock %}
+  <script src="{{ url_for('static', filename='js/claimhub-resources-theme.js') }}"></script>
+</body>
+</html>

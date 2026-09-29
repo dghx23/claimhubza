@@ -1,0 +1,224 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}Policy reader{% endblock %}
+{% block content %}
+{% set active = 'policy' %}
+{% include '_workspace_nav.html' %}
+
+<div class="ac-panel policy-reader-hero" style="margin-bottom:1.25rem;">
+  <div class="policy-reader-hero-text">
+    <h1>My policy</h1>
+    <p class="policy-reader-lead">
+      Read the wording that matters to your South African claim — waiting period, Date of Absence, disability test, notice requirements, exclusions and offsets — with source-linked snippets from your own documents.
+    </p>
+    {% if reader.analysis.has_analysis %}
+    <p class="policy-reader-meta">
+      <strong>{{ reader.analysis.filename or 'Policy document' }}</strong>
+      {% if reader.analysis.pages %} · {{ reader.analysis.pages }} page{{ 's' if reader.analysis.pages != 1 else '' }}{%
+      endif %}
+      · {{ reader.analysis.terms_matched }} clause area{{ 's' if reader.analysis.terms_matched != 1 else '' }} detected
+    </p>
+    {% else %}
+    <p class="policy-reader-meta policy-reader-meta--empty">No policy analysis yet — upload a policy PDF or schedule
+      below.</p>
+    {% endif %}
+  </div>
+  <div class="policy-reader-actions">
+    <a href="{{ url_for('edit_claim', claim_id=claim.id) }}#section-parties" class="ac-btn">Edit intake profile</a>
+    {% if reader.has_policy_upload %}
+    <form method="post" class="policy-reanalyze-form">
+      <input type="hidden" name="action" value="reanalyze">
+      <button type="submit" class="ac-btn">Re-scan policy</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="ra-grid-2 policy-reader-upload-row">
+  <div class="ac-panel">
+    <h2>Upload policy</h2>
+    <p class="ac-meta" style="margin-top:0;">Policy wording, schedule, member certificate, or renewal letter (PDF, Word,
+      or text).</p>
+    <form method="post" enctype="multipart/form-data" id="policy-reader-upload">
+      <input type="hidden" name="action" value="upload">
+      <div class="field">
+        <label for="policy-file">Policy file</label>
+        <input type="file" id="policy-file" name="policy" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" required>
+      </div>
+      <div class="field">
+        <label for="policy-note">Note (optional)</label>
+        <input type="text" id="policy-note" name="policy_note" placeholder="e.g. Group schedule March 2024">
+      </div>
+      <button type="submit" class="ac-btn ac-ac-btn-primary">Upload &amp; scan</button>
+    </form>
+  </div>
+
+  <div class="ac-panel">
+    <h2>Policy files in vault ({{ reader.policy_documents|length }})</h2>
+    {% if reader.policy_documents %}
+    <ul class="policy-doc-list">
+      {% for d in reader.policy_documents %}
+      <li>
+        <span class="policy-doc-icon" aria-hidden="true">📋</span>
+        <span>
+          <strong>{{ d.original_name }}</strong>
+          <span class="policy-doc-date">{{ d.uploaded_at[:10] }}</span>
+          {% if d.notes %}<span class="policy-doc-note">{{ d.notes }}</span>{% endif %}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+    <p style="margin-top:1rem;"><a href="{{ url_for('vault', claim_id=claim.id) }}">Open document vault →</a></p>
+    {% else %}
+    <p class="ac-meta">No policy documents yet. Upload from intake or use the form here.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% if reader.analysis.parties %}
+<div class="ac-panel" style="margin-top:1.25rem;">
+  <h2>Extracted parties</h2>
+  <div class="policy-party-grid">
+    {% for key, value in reader.analysis.parties.items() %}
+    {% if key != 'group_policy_effective' %}
+    <div class="policy-party-item">
+      <span class="policy-party-label">{{ key.replace('_', ' ').title() }}</span>
+      <span class="policy-party-value">{{ value }}</span>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% if reader.analysis.policy_reference.group_policy_effective %}
+  <p class="policy-reference-note">
+    <strong>Group policy effective:</strong> {{ reader.analysis.policy_reference.group_policy_effective.value }} —
+    {{ reader.analysis.policy_reference.group_policy_effective.note }}
+  </p>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if reader.analysis.traps %}
+<div class="ac-panel alert-card" style="margin-top:1.25rem;">
+  <h2>Policy trap alerts</h2>
+  <ul class="trap-list">
+    {% for trap in reader.analysis.traps %}
+    <li>{{ trap }}</li>
+    {% endfor %}
+  </ul>
+  <p style="margin-bottom:0;margin-top:0.75rem;"><a href="{{ url_for('resources_traps') }}">All policy traps →</a></p>
+</div>
+{% endif %}
+
+<div class="ra-grid-2" style="margin-top:1.25rem;">
+  <div class="ac-panel">
+    <h2>Policy checklist</h2>
+    <p class="ac-meta" style="margin-top:0;">
+      Claim-profile readiness against common GIP policy requirements — hover items for guidance;
+      <a href="{{ url_for('resources_glossary') }}">Glossary</a> has full explanations.
+    </p>
+    {% set checklist = reader.checklist %}
+    {% include '_policy_checklist.html' %}
+  </div>
+
+  <div class="ac-panel">
+    <h2>Not found in policy scan</h2>
+    <p class="ac-meta" style="margin-top:0;">These standard areas were not detected — upload a fuller schedule or check
+      manually.</p>
+    {% if reader.term_cards_missing %}
+    <ul class="policy-missing-list">
+      {% for card in reader.term_cards_missing[:8] %}
+      <li>{{ card.term }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p style="color:var(--success); font-weight:500;">All standard scan areas found in uploaded policy text.</p>
+    {% endif %}
+  </div>
+</div>
+
+<section class="policy-term-cards-section" style="margin-top:1.75rem;">
+  <div class="ac-section-head">
+    <h2>Term cards</h2>
+    <span class="ac-meta">{{ reader.term_cards_matched|length }} sourced from policy text · {{ reader.term_cards|length
+      }} standard areas scanned</span>
+  </div>
+
+  {% if reader.term_cards_matched %}
+  <div class="policy-term-card-grid">
+    {% for card in reader.term_cards_matched %}
+    <article class="policy-term-card policy-term-card--{{ card.status }}">
+      <header class="policy-term-card-head">
+        <h3>{{ card.term }}</h3>
+        <span class="policy-term-status policy-term-status--{{ card.status }}">
+          {% if card.snippet %}Sourced{% else %}Mentioned{% endif %}
+        </span>
+      </header>
+
+      {% if card.snippet %}
+      <blockquote class="policy-term-snippet">"{{ card.snippet }}"</blockquote>
+      {% endif %}
+
+      {% if card.plain %}
+      <p class="policy-term-plain"><strong>Plain meaning:</strong> {{ card.plain }}</p>
+      {% endif %}
+
+      {% if card.trap %}
+      <p class="policy-term-trap"><strong>Trap:</strong> {{ card.trap }}</p>
+      {% endif %}
+
+      {% if card.evidence %}
+      <p class="policy-term-evidence"><strong>Evidence:</strong> {{ card.evidence }}</p>
+      {% endif %}
+
+      <p class="policy-term-action"><strong>Next:</strong> {{ card.action }}</p>
+
+      <footer class="policy-term-card-links">
+        {% if card.core_term_slug %}
+        <a href="{{ url_for('resources_term_detail', slug=card.core_term_slug) }}">Policy term →</a>
+        {% endif %}
+        {% if card.language_slug %}
+        <a href="{{ url_for('resources_language_term', slug=card.language_slug) }}">Language map →</a>
+        {% endif %}
+        {% if card.trap_slug %}
+        <a href="{{ url_for('resources_trap_detail', slug=card.trap_slug) }}">Trap detail →</a>
+        {% endif %}
+        <a href="{{ url_for('edit_claim', claim_id=claim.id) }}">Linked intake fields →</a>
+      </footer>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="ac-panel">
+    <p class="ac-meta">Upload a policy document to generate source-linked term cards. Scanned PDFs and text files work
+      best.</p>
+  </div>
+  {% endif %}
+</section>
+
+{% if reader.analysis.suggested %}
+<div class="ac-panel" style="margin-top:1.25rem;">
+  <h2>Suggested values from policy</h2>
+  <div class="ac-table-wrap">
+    <table class="ac-table">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Extracted value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for key, value in reader.analysis.suggested.items() %}
+        <tr>
+          <td>{{ key.replace('_', ' ').title() }}</td>
+          <td>{{ value }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:1rem;"><a href="{{ url_for('edit_claim', claim_id=claim.id) }}">Apply in intake profile →</a></p>
+</div>
+{% endif %}
+
+<script src="{{ url_for('static', filename='js/policy-reader.js') }}"></script>
+<script src="{{ url_for('static', filename='js/term-tooltips.js') }}" defer></script>
+{% endblock %}

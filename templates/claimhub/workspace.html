@@ -1,0 +1,118 @@
+{% extends "claimhub/base.html" %}
+{% block title %}{{ claim_label }} — {{ workspace_label }}{% endblock %}
+{% block body %}
+<div class="ch-shell">
+  <aside class="ch-side">
+    <div class="ch-side-title">
+      <strong>{{ workspace_label }}</strong>
+      <small>{{ claim_label }}</small>
+    </div>
+    <nav>
+      <a class="active" href="{{ url_for('claimhub.workspace', role=role, claim_id=claim_id) }}">Overview</a>
+      <a href="#documents">Documents</a>
+      <a href="#requests">Requests</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#activity">Activity</a>
+      <a href="{{ url_for('claimhub.role_home', role=role) }}">Back to cases</a>
+    </nav>
+  </aside>
+
+  <main class="ch-main">
+    <header class="ch-main-head">
+      <div>
+        <p class="ch-kicker">ClaimHub · {{ workspace_label }}</p>
+        <h1>{{ claim_label }}</h1>
+        <p>{{ role_meta.summary }}</p>
+      </div>
+      {% if access_notice %}<span class="ch-status pending">Access pending</span>{% else %}<span class="ch-status">Authorised view</span>{% endif %}
+    </header>
+
+    {% if access_notice %}
+      <section class="ch-access">
+        <p class="ch-kicker">Protected case</p>
+        <h2>No case data is visible</h2>
+        <p style="color:var(--muted);line-height:1.6;">{{ access_notice }}</p>
+      </section>
+    {% else %}
+      <section class="ch-stats">
+        <div class="ch-stat"><strong>{{ collaboration.requests|length }}</strong><span>Open requests</span></div>
+        <div class="ch-stat"><strong>{{ documents|length }}</strong><span>Shared documents</span></div>
+        <div class="ch-stat"><strong>{{ timeline|length }}</strong><span>Timeline events</span></div>
+        <div class="ch-stat"><strong>{{ scopes|length }}</strong><span>Authorised scopes</span></div>
+      </section>
+
+      <div class="ch-content-grid">
+        <div>
+          <section class="ch-panel">
+            <div class="ch-panel-head"><h2>Claim overview</h2><span>{{ claim.claim_stage or 'Stage not set' }}</span></div>
+            <div class="ch-panel-body">
+              <p><strong>{{ claim.claimant_name or 'Claimant' }}</strong>{% if claim.insurer %} · {{ claim.insurer }}{% endif %}</p>
+              {% if employment %}<p style="margin-top:8px;">{{ employment.occupation or 'Occupation not set' }}{% if employment.employer %} · {{ employment.employer }}{% endif %}</p>{% endif %}
+              {% if functional %}<p style="margin-top:8px;">{{ functional.summary or 'No functional summary yet.' }}</p>{% endif %}
+            </div>
+          </section>
+
+          <section class="ch-panel" id="documents" style="margin-top:16px;">
+            <div class="ch-panel-head"><h2>Recent documents</h2><span>{{ documents|length }} shared</span></div>
+            <div class="ch-panel-body">
+              {% if documents %}
+              <ul class="ch-list">
+                {% for doc in documents %}
+                <li><span class="ch-dot"></span><div><strong>{{ doc.original_name }}</strong><small>{{ doc.doc_type|replace('_',' ')|title }}</small></div><small>shared</small></li>
+                {% endfor %}
+              </ul>
+              {% else %}<div class="ch-empty">No documents have been shared with this workspace.</div>{% endif %}
+            </div>
+          </section>
+
+          <section class="ch-panel" id="requests" style="margin-top:16px;">
+            <div class="ch-panel-head"><h2>Outstanding requests</h2><span>{{ collaboration.requests|length }}</span></div>
+            <div class="ch-panel-body">
+              {% if collaboration.requests %}
+              <ul class="ch-list">
+                {% for item in collaboration.requests %}
+                <li><span class="ch-dot"></span><div><strong>{{ item.title }}</strong><small>{{ item.description or 'No additional detail.' }}</small></div><small>{{ item.status }}</small></li>
+                {% endfor %}
+              </ul>
+              {% else %}<div class="ch-empty">No current requests for this role.</div>{% endif %}
+            </div>
+          </section>
+        </div>
+
+        <aside>
+          <section class="ch-panel">
+            <div class="ch-panel-head"><h2>Authorised access</h2><span>{{ scopes|length }}</span></div>
+            <div class="ch-panel-body"><div class="ch-scope-wrap">{% for scope in scopes %}<span class="ch-scope">{{ scope }}</span>{% endfor %}</div></div>
+          </section>
+
+          <section class="ch-panel" id="timeline" style="margin-top:16px;">
+            <div class="ch-panel-head"><h2>Timeline</h2><span>{{ timeline|length }} events</span></div>
+            <div class="ch-panel-body">
+              {% if timeline %}
+              <ul class="ch-list">
+                {% for event in timeline[:8] %}
+                <li><span class="ch-dot"></span><div><strong>{{ event.label or event.type or 'Event' }}</strong><small>{{ event.date or event.value or '' }}</small></div></li>
+                {% endfor %}
+              </ul>
+              {% else %}<div class="ch-empty">No visible timeline events.</div>{% endif %}
+            </div>
+          </section>
+
+          <section class="ch-panel" id="activity" style="margin-top:16px;">
+            <div class="ch-panel-head"><h2>Recent activity</h2><span>{{ collaboration.audit|length }}</span></div>
+            <div class="ch-panel-body">
+              {% if collaboration.audit %}
+              <ul class="ch-list">
+                {% for event in collaboration.audit[:8] %}
+                <li><span class="ch-dot"></span><div><strong>{{ event.event_type|replace('.',' ')|replace('_',' ')|title }}</strong><small>{{ event.created_at }}</small></div></li>
+                {% endfor %}
+              </ul>
+              {% else %}<div class="ch-empty">No recorded activity yet.</div>{% endif %}
+            </div>
+          </section>
+        </aside>
+      </div>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}

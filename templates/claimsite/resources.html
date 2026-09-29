@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ClaimHub Resources — knowledge for fairer claims</title>
+  <meta name="description" content="ClaimHub Resources brings together practical guides, policy definitions, evidence tools, clinical references, insurer information and South African dispute guidance.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimsite.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimhub-system.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimhub-resources-theme.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/claimhub-resources-home.css') }}">
+</head>
+<body class="cs-app chr-public-site">
+  <header class="cs-nav">
+    <a class="cs-brand" href="{{ url_for('claimsite_home') }}">
+      <span class="cs-brand-mark"><i></i><i></i><i></i><i></i></span>
+      <span><strong>ClaimHub</strong><small>People. Evidence. Fair Outcomes.</small></span>
+    </a>
+    <nav>
+      <a href="{{ url_for('claimsite_home') }}">Home</a>
+      <a href="{{ url_for('claimsite_home') }}#connected">How it works</a>
+      <a class="is-active" href="{{ url_for('claimsite_resources') }}">Resources</a>
+      <a href="{{ url_for('claimhub.role_home', role='employer') }}">For employers</a>
+      <a href="{{ url_for('claimhub.role_home', role='adviser') }}">For advisers</a>
+      <a href="{{ url_for('inbox') }}">For claimants</a>
+      <a href="{{ url_for('claimsite_home') }}#sentrix">About</a>
+      <button type="button" class="chr-theme-toggle" data-chr-theme-toggle aria-pressed="false"><span data-theme-icon>☾</span><span data-theme-label>Dark</span></button>
+      <a class="cs-nav-primary" href="{{ url_for('inbox') }}">Start a claim</a>
+    </nav>
+  </header>
+
+  <main class="chr-public-main">
+  <p class="chr-eyebrow" style="padding:1rem 2rem">Private beta: claimant case creation and sharing are being prepared for the standalone service.</p>
+    <section class="chr-public-hero">
+      <div class="chr-public-hero-copy">
+        <p class="chr-eyebrow">ClaimHub Resources</p>
+        <h1>Find the right information<br>for the point you are at.</h1>
+        <p class="chr-lead">Practical claim guidance, policy language, evidence tools, clinical reference and dispute pathways — organised around the work a claimant or professional needs to do.</p>
+        <div class="chr-hero-actions">
+          <a class="chr-btn primary" href="#resource-library">Explore resources →</a>
+          <a class="chr-btn secondary" href="{{ url_for('inbox') }}">Open ClaimBuddy</a>
+          <a class="chr-btn secondary" href="{{ url_for('claimhub.index') }}">Open ClaimHub</a>
+        </div>
+      </div>
+      <aside class="chr-public-hero-panel">
+        <p class="chr-eyebrow">Powered by RiskAtlas</p>
+        <strong>Reference intelligence, applied to a live claim.</strong>
+        <div>
+          <span>Policy & insurer knowledge</span>
+          <span>Clinical reference</span>
+          <span>Occupation & functional context</span>
+          <span>Dispute & ombud guidance</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="chr-quick-nav" aria-label="Resource categories">
+      <a href="#prepare"><span>01</span><strong>Prepare</strong><small>Policy, terms and process</small></a>
+      <a href="#evidence"><span>02</span><strong>Evidence</strong><small>Gaps, function and records</small></a>
+      <a href="#clinical"><span>03</span><strong>Clinical</strong><small>Conditions, medicines and clinicians</small></a>
+      <a href="#decisions"><span>04</span><strong>Decisions</strong><small>Review, disputes and ombud</small></a>
+      <a href="#directories"><span>05</span><strong>Directories</strong><small>Insurers and reference tools</small></a>
+    </section>
+
+    <section class="chr-library" id="resource-library">
+      <div class="chr-section-intro">
+        <p class="chr-eyebrow">Resource library</p>
+        <h2>Each area has a clear job.</h2>
+        <p>Use the section that matches what you are trying to understand, prepare or challenge. The resources remain reference material; your live claim record stays in ClaimHub.</p>
+      </div>
+
+      <section class="chr-resource-group" id="prepare">
+        <div class="chr-group-head">
+          <div><span>01</span><div><p class="chr-eyebrow">Prepare the claim</p><h3>Understand the policy and process first.</h3></div></div>
+          <p>Start here when you need to know what the policy is asking for, what the main stages are, and which words carry specific meaning.</p>
+        </div>
+        <div class="chr-resource-grid">
+          <a class="chr-resource-card blue" href="{{ url_for('resources_workflow') }}">
+            <span class="chr-icon">▤</span><small>Process</small><h4>Step-by-step guides</h4>
+            <p>Follow the claim journey from preparation and submission through assessment, review and dispute.</p><b>Open guides →</b>
+          </a>
+          <a class="chr-resource-card blue" href="{{ url_for('resources_terms') }}">
+            <span class="chr-icon">▥</span><small>Policy</small><h4>Policy terms explained</h4>
+            <p>Plain-language explanations of the clauses and concepts that commonly shape an income-protection claim.</p><b>Explore policy terms →</b>
+          </a>
+          <a class="chr-resource-card teal" href="{{ url_for('resources_glossary') }}">
+            <span class="chr-icon">AZ</span><small>Language</small><h4>Glossary</h4>
+            <p>Definitions for the recurring insurance, medical, employment and evidence language used across the claim.</p><b>Open glossary →</b>
+          </a>
+          <a class="chr-resource-card teal" href="{{ url_for('resources_disability_definitions') }}">
+            <span class="chr-icon">✚</span><small>Definitions</small><h4>Disability & incapacity</h4>
+            <p>Compare how disability, incapacity and function are used across policy, clinical and institutional settings.</p><b>Compare definitions →</b>
+          </a>
+        </div>
+      </section>
+
+      <section class="chr-resource-group soft" id="evidence">
+        <div class="chr-group-head">
+          <div><span>02</span><div><p class="chr-eyebrow">Build the evidence</p><h3>Show what is missing and what the work really requires.</h3></div></div>
+          <p>This is the practical evidence layer: gaps, functional impact, material duties and the records needed to support the claim story.</p>
+        </div>
+        <div class="chr-resource-grid">
+          <a class="chr-resource-card teal" href="{{ url_for('resources_evidence_gaps') }}">
+            <span class="chr-icon">⌕</span><small>Evidence</small><h4>Evidence gap library</h4>
+            <p>Identify missing records, understand who usually holds them, and see why each gap matters.</p><b>Find evidence gaps →</b>
+          </a>
+          <a class="chr-resource-card purple" href="{{ url_for('resources_language_map') }}">
+            <span class="chr-icon">◉</span><small>Function</small><h4>Functional impact tools</h4>
+            <p>Connect diagnosis and symptoms to functional limits, material duties and the policy test.</p><b>Explore functional language →</b>
+          </a>
+          <a class="chr-resource-card purple" href="{{ url_for('intake') }}">
+            <span class="chr-icon">☑</span><small>ClaimBuddy</small><h4>Claim readiness</h4>
+            <p>Apply the reference material to your own claim: organise duties, health information, dates and supporting evidence.</p><b>Open ClaimBuddy →</b>
+          </a>
+          <a class="chr-resource-card navy" href="https://riskatlas.co.za/backend/occupations" target="_blank" rel="noopener">
+            <span class="chr-icon">◇</span><small>Occupation</small><h4>Occupation & duties reference</h4>
+            <p>See the reference source behind occupation suggestions and how duties should be confirmed against the real job.</p><b>View source context ↗</b>
+          </a>
+        </div>
+      </section>
+
+      <section class="chr-resource-group" id="clinical">
+        <div class="chr-group-head">
+          <div><span>03</span><div><p class="chr-eyebrow">Clinical reference</p><h3>Understand the medical information without turning it into the claim decision.</h3></div></div>
+          <p>ClinicalAtlas provides reference context. ClaimBuddy captures what applies to the claimant; ClaimHub stores the case-specific record.</p>
+        </div>
+        <div class="chr-clinical-feature">
+          <div class="chr-clinical-copy">
+            <span class="chr-icon large">⚕</span>
+            <p class="chr-eyebrow">ClinicalAtlas ZA</p>
+            <h4>Conditions, medications, therapies and clinician context.</h4>
+            <p>Use ClinicalAtlas to look up South African clinical reference information. Select or confirm what applies in ClaimBuddy; the live claim record remains in ClaimHub.</p>
+            <div class="chr-inline-actions">
+              <a class="chr-btn primary" href="https://riskatlas.co.za/clinical-atlas/">Open ClinicalAtlas ZA →</a>
+              <a class="chr-btn secondary" href="{{ url_for('inbox') }}">Use in ClaimBuddy</a>
+            </div>
+          </div>
+          <div class="chr-clinical-list">
+            <span><b>01</b> Conditions & ICD context</span>
+            <span><b>02</b> Medications & strengths</span>
+            <span><b>03</b> Therapies & treatment context</span>
+            <span><b>04</b> Clinician roles & specialties</span>
+            <span><b>05</b> Medical-aid context</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="chr-resource-group soft" id="decisions">
+        <div class="chr-group-head">
+          <div><span>04</span><div><p class="chr-eyebrow">Understand decisions</p><h3>Review what happened and understand the available escalation routes.</h3></div></div>
+          <p>Use these resources after a decision, during an internal review, or when preparing for an external complaint.</p>
+        </div>
+        <div class="chr-resource-grid">
+          <a class="chr-resource-card purple" href="{{ url_for('resources_nfosa_dispute') }}">
+            <span class="chr-icon">👥</span><small>South Africa</small><h4>NFO & ombud guidance</h4>
+            <p>Understand escalation routes, complaint framing and the role of the National Financial Ombud.</p><b>Open dispute guidance →</b>
+          </a>
+          <a class="chr-resource-card navy" href="{{ url_for('resources_news') }}">
+            <span class="chr-icon">⚖</span><small>Updates</small><h4>Legal & policy updates</h4>
+            <p>Follow relevant regulatory, ombud and policy developments that may affect the wider claims environment.</p><b>View updates →</b>
+          </a>
+          <a class="chr-resource-card blue" href="{{ url_for('resources_precedent') }}">
+            <span class="chr-icon">§</span><small>Guidance</small><h4>Ombud guidance & precedent</h4>
+            <p>Read structured guidance drawn from published complaint and dispute material.</p><b>Explore guidance →</b>
+          </a>
+          <a class="chr-resource-card teal" href="{{ url_for('resources_traps') }}">
+            <span class="chr-icon">!</span><small>Patterns</small><h4>Policy traps</h4>
+            <p>Recognise recurring failure modes such as date, evidence, job-title and pre-existing-condition traps.</p><b>Review policy traps →</b>
+          </a>
+        </div>
+      </section>
+
+      <section class="chr-resource-group" id="directories">
+        <div class="chr-group-head">
+          <div><span>05</span><div><p class="chr-eyebrow">Directories & reference</p><h3>Find the institution, term or reference point you need.</h3></div></div>
+          <p>Use the directories and Wiki when you know what you need to look up but not where it sits in the wider system.</p>
+        </div>
+        <div class="chr-resource-grid three">
+          <a class="chr-resource-card blue" href="{{ url_for('resources_life_insurers', jurisdiction='za') }}">
+            <span class="chr-icon">▦</span><small>Directory</small><h4>Life insurers</h4>
+            <p>South African insurer information and directory context for income-protection claims.</p><b>Open insurer directory →</b>
+          </a>
+          <a class="chr-resource-card teal" href="https://riskatlas.co.za/resources/wiki">
+            <span class="chr-icon">W</span><small>Index</small><h4>RiskAtlas Wiki</h4>
+            <p>Search the wider reference index across terms, definitions, clinical material and support pathways.</p><b>Search the Wiki →</b>
+          </a>
+          <a class="chr-resource-card navy" href="https://riskatlas.co.za/compass/za">
+            <span class="chr-icon">⌖</span><small>Public support</small><h4>Social Security Compass</h4>
+            <p>Government support, eligibility and payment pathways that sit alongside — but outside — private insurance.</p><b>Open Compass →</b>
+          </a>
+        </div>
+      </section>
+    </section>
+
+    <section class="chr-connection">
+      <div>
+        <p class="chr-eyebrow">How it connects</p>
+        <h2>Reference knowledge becomes useful when it is applied to the case.</h2>
+      </div>
+      <div class="chr-flow">
+        <article><span>●◌●</span><strong>RiskAtlas</strong><small>Reference intelligence</small></article>
+        <b>→</b>
+        <article><span>▣</span><strong>ClaimHub Resources</strong><small>Guides, tools and explanations</small></article>
+        <b>→</b>
+        <article class="buddy"><span>●</span><strong>ClaimBuddy</strong><small>Claimant capture & guidance</small></article>
+        <b>→</b>
+        <article class="hub"><span>◫</span><strong>ClaimHub</strong><small>Shared live case record</small></article>
+      </div>
+    </section>
+
+    <section class="chr-foundation">
+      <div class="chr-foundation-brand">
+        <strong>Sentrix Digital</strong>
+        <span>Products · Technology · Intelligence</span>
+      </div>
+      <p>Sentrix Digital builds and operates RiskAtlas and ClaimHub. ClaimHub Resources applies that reference intelligence to the claims journey without replacing the live case record.</p>
+    </section>
+  </main>
+
+  <footer class="cs-footer">
+    <div><strong>ClaimHub</strong><span>People. Evidence. Fair Outcomes.</span></div>
+    <p>Reference material supports understanding and organisation. It is not legal or medical advice.</p>
+    <div><a href="{{ url_for('claimsite_home') }}">ClaimHub</a> · <a href="https://sentrixdigital.com" rel="noopener">A Sentrix Digital product</a></div>
+  </footer>
+  <script src="{{ url_for('static', filename='js/claimhub-resources-theme.js') }}"></script>
+</body>
+</html>

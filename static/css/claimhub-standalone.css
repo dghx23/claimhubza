@@ -1,0 +1,111 @@
+:root{
+  --navy:#0c2c55;
+  --navy2:#102a44;
+  --blue:#0f63d7;
+  --blue2:#2a7de1;
+  --teal:#0f8f8b;
+  --purple:#5c39e6;
+  --purple2:#7c4dff;
+  --cyan:#eaf4ff;
+  --paper:#f6f9fc;
+  --white:#fff;
+  --ink:#10243d;
+  --muted:#687b91;
+  --line:#d8e5f2;
+  --good:#1aa36f;
+  --warn:#f6a623;
+  --danger:#e9585a;
+  --shadow:0 8px 24px rgba(15,57,108,.08);
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(180deg,#f8fbff 0%,#eef5fb 100%)}
+a{color:inherit}
+.ch-app{min-height:100vh}
+.ch-topbar{height:76px;display:flex;align-items:center;padding:0 28px;background:linear-gradient(90deg,#0e345f 0%,#0a2342 72%);color:#fff;border-bottom:1px solid rgba(255,255,255,.12);box-shadow:0 2px 12px rgba(9,35,66,.18);position:sticky;top:0;z-index:50}
+.ch-brand{display:flex;align-items:center;gap:12px;text-decoration:none;min-width:240px}
+.ch-brand strong{display:block;font-size:24px;line-height:1;font-weight:800;letter-spacing:-.03em}
+.ch-brand small{display:block;margin-top:5px;font-size:11px;letter-spacing:.08em;color:#bdd7f2;text-transform:uppercase}
+.ch-brand-mark{position:relative;width:34px;height:34px;display:block}
+.ch-brand-mark span{position:absolute;width:9px;height:9px;border:3px solid #fff;border-radius:50%;background:transparent}
+.ch-brand-mark span:nth-child(1){left:0;top:12px}.ch-brand-mark span:nth-child(2){left:12px;top:0}.ch-brand-mark span:nth-child(3){left:12px;top:24px}.ch-brand-mark span:nth-child(4){left:24px;top:12px}
+.ch-brand-mark:before,.ch-brand-mark:after{content:"";position:absolute;left:8px;top:16px;width:20px;height:2px;background:#fff;transform-origin:center}.ch-brand-mark:before{transform:rotate(45deg)}.ch-brand-mark:after{transform:rotate(-45deg)}
+.ch-topnav{margin-left:auto;display:flex;align-items:center;gap:6px}
+.ch-topnav a{padding:10px 12px;text-decoration:none;font-size:13px;font-weight:650;color:#dcecff;border-radius:8px}
+.ch-topnav a:hover{background:rgba(255,255,255,.08);color:#fff}
+.ch-topnav .ch-claimbuddy-link{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;padding:10px 16px}
+.ch-page{width:min(1480px,100%);margin:0 auto;padding:24px}
+.ch-hero{background:linear-gradient(100deg,#0d4d96 0%,#0d67c9 56%,#5a36df 100%);border-radius:18px;color:#fff;padding:30px 34px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:center;box-shadow:var(--shadow)}
+.ch-hero .kicker,.ch-kicker{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:800;opacity:.82;margin:0 0 8px}
+.ch-hero h1{font-size:42px;line-height:1.02;letter-spacing:-.04em;margin:0 0 12px;max-width:760px}
+.ch-hero p{font-size:16px;line-height:1.6;color:#e6f1ff;margin:0;max-width:760px}
+.ch-hero-badge{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:16px 18px;border-radius:12px;min-width:240px}
+.ch-hero-badge strong{display:block;font-size:14px}.ch-hero-badge span{display:block;margin-top:4px;color:#dcecff;font-size:12px}
+.ch-workspace-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:18px}
+.ch-workspace-card{position:relative;min-height:230px;padding:18px;border-radius:14px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);text-decoration:none;display:flex;flex-direction:column;overflow:hidden}
+.ch-workspace-card:before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--blue)}
+.ch-workspace-card.employer:before{background:var(--teal)}.ch-workspace-card.adviser:before{background:var(--purple)}.ch-workspace-card.reviewer:before{background:#0c6b74}
+.ch-workspace-card .eyebrow{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);margin-top:10px}
+.ch-workspace-card.employer .eyebrow{color:var(--teal)}.ch-workspace-card.adviser .eyebrow{color:var(--purple)}.ch-workspace-card.reviewer .eyebrow{color:#0c6b74}
+.ch-workspace-card h2{font-size:21px;letter-spacing:-.03em;margin:30px 0 8px}.ch-workspace-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}.ch-workspace-card .open{margin-top:auto;padding-top:20px;color:var(--blue);font-weight:750;font-size:13px}
+.ch-workspace-card:hover{transform:translateY(-3px);transition:.16s ease;border-color:#b9d5ef}
+.ch-bottom-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:18px}
+.ch-panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.ch-panel-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+.ch-panel-head h2{font-size:15px;margin:0;letter-spacing:-.01em}.ch-panel-head span{font-size:11px;color:var(--muted);font-weight:700}
+.ch-panel-body{padding:18px}.ch-panel-body p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+.ch-claimbuddy-strip{margin-top:18px;border-radius:14px;background:linear-gradient(100deg,#f3efff,#ece8ff);border:1px solid #d9d0ff;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.ch-claimbuddy-strip strong{font-size:20px;color:#4321bf}.ch-claimbuddy-strip small{display:block;color:#725fb4;margin-top:3px}.ch-claimbuddy-strip a{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;text-decoration:none;padding:11px 16px;border-radius:9px;font-weight:750;font-size:13px}
+.ch-shell{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:calc(100vh - 76px)}
+.ch-side{background:linear-gradient(180deg,#102c49,#0a223b);color:#fff;padding:18px 12px;box-shadow:2px 0 8px rgba(12,44,85,.08)}
+.ch-side-title{padding:8px 10px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.ch-side-title strong{display:block;font-size:16px}.ch-side-title small{display:block;margin-top:4px;color:#9fc1df;font-size:11px}
+.ch-side nav{padding-top:12px}.ch-side a{display:flex;align-items:center;gap:10px;text-decoration:none;padding:11px 12px;margin:3px 0;border-radius:8px;font-size:13px;color:#bdd0e1}
+.ch-side a:hover,.ch-side a.active{background:#174c81;color:#fff}.ch-side a.active{box-shadow:inset 3px 0 0 #5fa5ff}
+.ch-main{padding:24px 26px;min-width:0}
+.ch-main-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:18px}
+.ch-main-head h1{font-size:28px;margin:3px 0 5px;letter-spacing:-.03em}.ch-main-head p{margin:0;color:var(--muted);font-size:13px}
+.ch-status{font-size:11px;font-weight:800;padding:7px 10px;border-radius:999px;background:#e9f8f2;color:#16704f;border:1px solid #b7e5d3}.ch-status.pending{background:#fff7e8;color:#8b6213;border-color:#f1d79d}
+.ch-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.ch-stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+.ch-stat strong{display:block;font-size:24px;line-height:1;margin-bottom:6px}.ch-stat span{font-size:11px;color:var(--muted);font-weight:700}
+.ch-content-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(310px,.7fr);gap:16px}
+.ch-list{list-style:none;margin:0;padding:0}.ch-list li{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:start;padding:11px 0;border-bottom:1px solid var(--line)}
+.ch-list li:last-child{border-bottom:0}.ch-dot{width:8px;height:8px;border-radius:50%;background:var(--good);margin-top:6px}.ch-list strong{font-size:13px}.ch-list small{display:block;color:var(--muted);font-size:11px;margin-top:3px;line-height:1.45}
+.ch-scope-wrap{display:flex;flex-wrap:wrap;gap:6px}.ch-scope{font-size:10px;padding:6px 8px;border-radius:7px;background:#edf4fb;border:1px solid #d3e2f2;color:#315878;font-weight:700}
+.ch-empty{padding:38px;text-align:center;color:var(--muted);font-size:13px}
+.ch-form{display:grid;gap:10px}.ch-form label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.ch-form input,.ch-form select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;font:inherit;color:var(--ink)}
+.ch-form button{border:0;border-radius:8px;padding:11px 14px;background:var(--blue);color:#fff;font-weight:800;cursor:pointer}
+.ch-access{width:min(720px,calc(100% - 40px));margin:54px auto;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:28px}
+@media(max-width:1100px){.ch-workspace-grid{grid-template-columns:1fr 1fr}.ch-content-grid{grid-template-columns:1fr}.ch-stats{grid-template-columns:1fr 1fr}.ch-topnav a:not(.ch-claimbuddy-link){display:none}}
+@media(max-width:720px){.ch-page{padding:14px}.ch-hero{grid-template-columns:1fr;padding:24px}.ch-hero h1{font-size:32px}.ch-workspace-grid{grid-template-columns:1fr}.ch-bottom-grid{grid-template-columns:1fr}.ch-shell{grid-template-columns:1fr}.ch-side{display:none}.ch-main{padding:14px}.ch-stats{grid-template-columns:1fr 1fr}.ch-topbar{padding:0 14px}.ch-brand{min-width:0}.ch-brand small{display:none}}
+
+.ch-initiation-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.ch-initiation-card{padding:12px;border:1px solid var(--line);border-radius:10px;background:#f8fbfe}
+.ch-initiation-card>span{display:block;color:#1768b6;font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:850}
+.ch-initiation-card>strong{display:block;margin:9px 0 5px;font-size:11px;line-height:1.4;color:#263e57}
+.ch-initiation-card>p{margin:0;color:var(--muted);font-size:9px;line-height:1.5}
+.ch-subtle{color:var(--muted);font-size:10px;line-height:1.55}
+@media(max-width:1000px){.ch-initiation-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.ch-initiation-grid{grid-template-columns:1fr}}
+
+
+/* Harmonised professional portal — same ClaimHub poster/resource language */
+.ch-app{background:linear-gradient(180deg,#f8fbfe,#f2f7fb)}
+.ch-page{padding-top:18px}
+.ch-hero{background:linear-gradient(105deg,#ffffff,#f5f9fd)!important;color:#17365f!important;border:1px solid #dce6ef;box-shadow:0 7px 20px rgba(21,41,66,.05)!important}
+.ch-hero .kicker,.ch-kicker{color:#0f67cf!important;opacity:1!important}
+.ch-hero h1{color:#17365f!important}
+.ch-hero p{color:#62758a!important}
+.ch-hero-badge{background:#eef6ff!important;border-color:#d2e5f6!important}.ch-hero-badge strong{color:#17365f}.ch-hero-badge span{color:#60758a!important}
+.ch-workspace-card,.ch-panel,.ch-stat,.ch-access{border-color:#dce6ef!important;box-shadow:0 7px 20px rgba(21,41,66,.045)!important}
+.ch-workspace-card:before{background:#0f67cf!important}.ch-workspace-card.employer:before{background:#108b88!important}.ch-workspace-card.adviser:before{background:#5c39e6!important}.ch-workspace-card.reviewer:before{background:#0f67cf!important}
+.ch-claimbuddy-strip{background:linear-gradient(100deg,#f1edff,#edf6ff)!important;border-color:#d9d4f3!important}
+.ch-side{background:linear-gradient(180deg,#123d6c,#0d2f54)!important}
+.ch-side a:hover,.ch-side a.active{background:#0f67cf!important}.ch-side a.active{box-shadow:inset 3px 0 0 #a9d2ff!important}
+.ch-main-head h1,.ch-panel-head h2,.ch-workspace-card h2{color:#17365f}
+.ch-stat strong{color:#17365f}
+.ch-scope{background:#eef6ff!important;border-color:#d3e5f4!important;color:#27577e!important}
+.ch-form button{background:#0f67cf!important}
+.ch-initiation-card{background:#f8fbfe!important;border-color:#dce6ef!important}
+.ch-initiation-card>span{color:#0f67cf!important}

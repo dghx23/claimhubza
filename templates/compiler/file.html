@@ -1,0 +1,312 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}File — {{ file_title }}{% endblock %}
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/compiler.css') }}">
+{% endblock %}
+{% block content %}
+{% set active = 'file' %}
+{% include '_workspace_nav.html' %}
+{% set module_kicker = 'South Africa · Claim overview' %}
+{% set module_title = 'My claim' %}
+{% set module_description = 'See the stage, parties, chronology, important dates, functional story and the evidence still needed to move your claim forward.' %}
+{% include 'claimbuddy/_module_header.html' %}
+
+<div class="compiler-stat-row">
+  <div class="compiler-stat"><strong>{{ score }}%</strong><span>File completeness</span></div>
+  <div class="compiler-stat"><strong>{{ documents|length }}</strong><span>Documents</span></div>
+  <div class="compiler-stat"><strong>{{ gaps|length }}</strong><span>Open gaps</span></div>
+  <div class="compiler-stat"><strong>{{ stage_label }}</strong><span>Stage</span></div>
+</div>
+
+<section class="cb-journey-strip" aria-label="Claim journey">
+  <a href="{{ url_for('vault', claim_id=claim.id) }}"><span>02</span><strong>Documents</strong><small>{{ documents|length }} in file</small></a>
+  <a href="{{ url_for('policy_reader', claim_id=claim.id) }}"><span>03</span><strong>Policy</strong><small>Read the test</small></a>
+  <a href="{{ url_for('functional_capacity', claim_id=claim.id) }}"><span>04</span><strong>Function</strong><small>Link duties & limits</small></a>
+  <a href="{{ url_for('gaps', claim_id=claim.id) }}"><span>06</span><strong>Evidence gaps</strong><small>{{ gaps|length }} open</small></a>
+  <a href="{{ url_for('pack', claim_id=claim.id) }}"><span>09</span><strong>Claim pack</strong><small>{{ score }}% complete</small></a>
+</section>
+
+<div class="compiler-actions">
+  <a href="{{ url_for('vault', claim_id=claim.id) }}" class="btn btn-primary">Continue with documents</a>
+  <a href="{{ url_for('edit_claim', claim_id=claim.id) }}" class="btn btn-secondary">Update profile</a>
+  <a href="{{ url_for('claim_access', claim_id=claim.id) }}" class="btn btn-secondary">Share access</a>
+</div>
+
+{% if conflict %}
+<div class="compiler-panel compiler-conflict" style="margin-bottom:1rem;">
+  <h2>{{ claim_juris.disablement_label }} conflict</h2>
+  <p>You stated <strong>{{ conflict.user }}</strong>. Insurer states <strong>{{ conflict.insurer }}</strong>. This is the date trap — keep both, do not average them.</p>
+  <p class="compiler-quiet" style="margin:0;">
+    <a href="{{ url_for('resources_language_term', slug='date-of-absence') }}">{{ claim_juris.disablement_label }}</a>
+    · <a href="{{ url_for('resources_trap_detail', slug='date-trap') }}">Date trap</a>
+  </p>
+</div>
+{% endif %}
+
+<div class="compiler-grid">
+
+  <div class="compiler-panel span-2">
+    <h2>Parties</h2>
+    <form method="post" action="{{ url_for('dashboard', claim_id=claim.id) }}">
+      <div class="compiler-parties">
+        <div>
+          <label for="claimant_name">Claimant</label>
+          <input id="claimant_name" name="claimant_name" value="{{ claim.claimant_name or '' }}">
+        </div>
+        <div>
+          <label for="employer">Employer</label>
+          <input id="employer" name="employer" value="{{ claim.employer or '' }}">
+        </div>
+        <div>
+          <label for="insurer">Insurer</label>
+          <input id="insurer" name="insurer" value="{{ claim.insurer or '' }}">
+        </div>
+        <div>
+          <label for="policyholder">{{ claim_juris.policyholder_label }}</label>
+          <input id="policyholder" name="policyholder" value="{{ claim.policyholder or '' }}" placeholder="Policyholder / participating employer">
+        </div>
+        <div>
+          <label>Country</label>
+          <input type="hidden" name="jurisdiction" value="za">
+          <div class="cb-static-field">South Africa</div>
+        </div>
+        <div>
+          <label for="cover_type">Cover type</label>
+          <select id="cover_type" name="cover_type" data-empty-label="Not set">
+            <option value="">Not set</option>
+            {% for key, label in claim_juris.cover_types %}
+            <option value="{{ key }}" {% if claim.cover_type == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="policy_number">Policy</label>
+          <input id="policy_number" name="policy_number" value="{{ claim.policy_number or '' }}">
+        </div>
+        <div>
+          <label for="claim_reference">Claim ref</label>
+          <input id="claim_reference" name="claim_reference" value="{{ claim.claim_reference or '' }}">
+        </div>
+        <div>
+          <label for="occupation">Occupation</label>
+          <input id="occupation" name="occupation" value="{{ claim.occupation or '' }}">
+        </div>
+        <div>
+          <label for="claim_stage">Stage</label>
+          <select id="claim_stage" name="claim_stage">
+            {% for key, label in stages.items() %}
+            <option value="{{ key }}" {% if claim.claim_stage == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="date_of_absence">{{ claim_juris.disablement_label }} (yours)</label>
+          <input id="date_of_absence" name="date_of_absence" value="{{ claim.date_of_absence or '' }}" placeholder="YYYY-MM-DD">
+        </div>
+        <div>
+          <label for="insurer_doa">{{ claim_juris.disablement_label }} (insurer)</label>
+          <input id="insurer_doa" name="insurer_doa" value="{{ claim.insurer_doa or '' }}" placeholder="YYYY-MM-DD">
+        </div>
+        <div>
+          <label for="waiting_period">Waiting period</label>
+          <input id="waiting_period" name="waiting_period" value="{{ claim.waiting_period or '' }}">
+        </div>
+        <div>
+          <label for="review_deadline">{{ claim_juris.idr_label }} deadline</label>
+          <input id="review_deadline" name="review_deadline" value="{{ claim.review_deadline or '' }}" placeholder="YYYY-MM-DD">
+        </div>
+        <div>
+          <label for="ombud_deadline">{{ claim_juris.complaint_stage_label }} deadline</label>
+          <input id="ombud_deadline" name="ombud_deadline" value="{{ claim.ombud_deadline or '' }}" placeholder="YYYY-MM-DD">
+        </div>
+
+      </div>
+      <div class="compiler-parties" style="margin-top:0.75rem;">
+        <div style="grid-column:1 / -1;">
+          <label for="material_duties">Material duties (not job title)</label>
+          <textarea id="material_duties" name="material_duties" rows="3">{{ claim.material_duties or '' }}</textarea>
+        </div>
+        <div style="grid-column:1 / -1;">
+          <label for="illness_summary">Illness → function (plain language)</label>
+          <textarea id="illness_summary" name="illness_summary" rows="3">{{ claim.illness_summary or '' }}</textarea>
+        </div>
+      </div>
+      <p style="margin:0.9rem 0 0;">
+        <button type="submit" class="btn btn-primary">Save file</button>
+        <a href="{{ url_for('edit_claim', claim_id=claim.id) }}" class="compiler-quiet" style="margin-left:0.75rem;">Full profile editor →</a>
+      </p>
+    </form>
+  </div>
+
+  <div class="compiler-panel">
+    <h2>Chronology</h2>
+    {% if timeline %}
+    <ul class="timeline">
+      {% for ev in timeline %}
+      <li>
+        <div class="date">{{ ev.date or 'undated' }}</div>
+        {{ ev.event }}
+        <div class="ac-meta">{{ ev.domain }} · {{ ev.source }}</div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="compiler-quiet">No dates yet. Save a {{ claim_juris.disablement_label }} above, or drop a policy / rejection / sick note in the inbox.</p>
+    {% endif %}
+  </div>
+
+  <div class="compiler-panel">
+    <h2>Clock</h2>
+    {% if clock %}
+    <ul>
+      {% for item in clock %}
+      <li {% if item.kind == 'clock' %}class="compiler-clock-urgent"{% endif %}>
+        <strong>{{ item.label }}</strong> — {{ item.value }}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="compiler-quiet">No deadlines captured. {{ claim_juris.idr_label }} and {{ claim_juris.complaint_body }} dates usually sit in the rejection letter.</p>
+    {% endif %}
+    <p class="compiler-quiet" style="margin-bottom:0;">
+      <a href="{{ url_for('resources_language_term', slug='waiting-period') }}">Waiting period</a>
+      · <a href="{{ url_for('resources_workflow') }}">Workflow</a>
+    </p>
+  </div>
+
+  <div class="compiler-panel span-2">
+    <h2>The argument — illness → function → duties</h2>
+    {% if argument.has_argument %}
+      {% if argument.occupation %}<p><strong>Occupation:</strong> {{ argument.occupation }}</p>{% endif %}
+      {% if argument.illness %}<p>{{ argument.illness }}</p>{% endif %}
+      {% if argument.rows %}
+      <div class="ac-table-wrap">
+        <table class="ac-table">
+          <thead><tr><th>Area</th><th>Cannot perform</th><th>Because</th></tr></thead>
+          <tbody>
+            {% for row in argument.rows %}
+            <tr>
+              <td>{{ row.domain_label or row.domain }}</td>
+              <td>{{ row.duty }}</td>
+              <td>{{ row.symptom }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% elif argument.duties %}
+      <p><strong>Material duties:</strong> {{ argument.duties }}</p>
+      {% endif %}
+    {% else %}
+    <p class="compiler-quiet">
+      Insurers decide on duty impact, not diagnosis names.
+      <a href="{{ url_for('functional_capacity', claim_id=claim.id) }}">Open the duty-impact builder</a>
+      or write a one-line illness → function note above.
+    </p>
+    {% endif %}
+    <p class="compiler-quiet" style="margin-bottom:0;">
+      <a href="{{ url_for('resources_language_term', slug='functional-capacity') }}">Functional capacity</a>
+      · <a href="{{ url_for('resources_language_term', slug='material-duties') }}">Material duties</a>
+      · <a href="{{ url_for('resources_confusion_detail', slug='diagnosis-disability') }}">Diagnosis ≠ disability</a>
+    </p>
+  </div>
+
+  <div class="compiler-panel">
+    <h2>Policy tests in this wording</h2>
+    {% if policy_found %}
+    <p>
+      {% for term in policy_found %}
+      <a class="tag-pill" href="{{ url_for('policy_reader', claim_id=claim.id) }}">{{ term.term }}</a>
+      {% endfor %}
+    </p>
+    <p class="compiler-quiet"><a href="{{ url_for('policy_reader', claim_id=claim.id) }}">Open policy reader →</a></p>
+    {% else %}
+    <p class="compiler-quiet">No policy scan yet. Upload a schedule or wording in
+      <a href="{{ url_for('vault', claim_id=claim.id) }}">documents</a>.</p>
+    {% endif %}
+    {% if policy_alerts %}
+    <h3>Stage-relevant traps</h3>
+    <ul class="trap-list trap-list--linked">
+      {% for trap in policy_alerts %}
+      <li>
+        <a href="{{ url_for('resources_trap_detail', slug=trap.slug) }}" class="has-term-tip" data-term-tip="{{ trap.hover_tip }}">{{ trap.name }}</a>
+        — {{ trap.description }}
+        {% for link in trap.language_links[:2] %}
+        · <a href="{{ url_for('resources_language_term', slug=link.slug) }}">{{ link.label }}</a>
+        {% endfor %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+
+  <div class="compiler-panel">
+    <h2>Missing — who holds it</h2>
+    {% if gaps %}
+    <div class="ac-table-wrap">
+      <table class="ac-table">
+        <thead><tr><th></th><th>Missing</th><th>Holder</th></tr></thead>
+        <tbody>
+          {% for g in gaps %}
+          <tr>
+            <td><span class="status-badge {{ g.urgency }}">{{ g.urgency }}</span></td>
+            <td>
+              <strong>{{ g.item }}</strong>
+              <div class="compiler-quiet">{{ g.request }}</div>
+            </td>
+            <td>{{ g.holder }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="compiler-quiet" style="margin-bottom:0;">
+      <a href="{{ url_for('letters', claim_id=claim.id) }}">Draft the requests →</a>
+      · <a href="{{ url_for('resources_evidence_gaps') }}">Why these gaps exist</a>
+    </p>
+    {% else %}
+    <p style="color:#15803d;font-weight:600;margin-bottom:0;">No rule-based gaps on the current file. That is not the same as a complete pack — still review the chronology.</p>
+    {% endif %}
+  </div>
+
+  <div class="compiler-panel span-2">
+    <h2>Documents ({{ documents|length }})</h2>
+    {% if documents %}
+    <div class="ac-table-wrap">
+      <table class="ac-table">
+        <thead><tr><th>File</th><th>Type</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for d in documents[:12] %}
+          <tr>
+            <td>{{ d.original_name }}</td>
+            <td>{{ d.doc_type }}</td>
+            <td>{{ (d.uploaded_at or '')[:10] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="compiler-quiet">Nothing in the inbox yet.</p>
+    {% endif %}
+    <p class="compiler-quiet" style="margin-bottom:0;"><a href="{{ url_for('vault', claim_id=claim.id) }}">Classify and add more →</a></p>
+  </div>
+
+</div>
+
+<form method="post" action="{{ url_for('delete_claim', claim_id=claim.id) }}" style="margin-top:1.5rem;"
+  onsubmit="return confirm('Delete this claim file?');">
+  <button type="submit" class="ac-btn ac-ac-btn-danger">Delete file</button>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.RA_COVER_TYPES = {
+    {% for j in jurisdictions %}
+    "{{ j.code }}": {{ j.cover_types | tojson }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+  };
+</script>
+<script src="{{ url_for('static', filename='js/jurisdiction.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/term-tooltips.js') }}" defer></script>
+{% endblock %}

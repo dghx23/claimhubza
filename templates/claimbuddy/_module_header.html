@@ -1,0 +1,14 @@
+<section class="cb-module-head">
+  <div>
+    <p class="cb-kicker">{{ module_kicker or 'ClaimBuddy' }}</p>
+    <h1>{{ module_title }}</h1>
+    <p>{{ module_description }}</p>
+  </div>
+  {% if claim %}
+  <aside>
+    <span>{{ claim.claimant_name or 'Your claim' }}</span>
+    <strong>{{ stage_label or claim.claim_stage or 'Claim in progress' }}</strong>
+    {% if claim.insurer %}<small>{{ claim.insurer }}</small>{% endif %}
+  </aside>
+  {% endif %}
+</section>

@@ -1,0 +1,26 @@
+{% extends "claimhub/base.html" %}
+{% block title %}ClaimHub access{% endblock %}
+{% block body %}
+<main class="ch-access">
+  <p class="ch-kicker">ClaimHub access</p>
+  {% if invitation %}
+  <h1>{{ invitation.role|replace('_',' ')|title }} workspace invitation</h1>
+  <p style="color:var(--muted);line-height:1.6;">You have been invited to participate in Case {{ invitation.claim_id }} through ClaimHub.</p>
+  {% else %}
+  <h1>Access link not recognised</h1>
+  {% endif %}
+
+  {% if error %}<p style="color:var(--danger);font-weight:700;">{{ error }}</p>{% endif %}
+
+  {% if invitation and not error %}
+  <form method="post" class="ch-form">
+    <label for="display_name">Full name</label>
+    <input id="display_name" name="display_name" autocomplete="name">
+    <label for="email">Invited email</label>
+    <input id="email" name="email" type="email" value="{{ invitation.email }}" autocomplete="email" required>
+    <button type="submit">Accept invitation</button>
+  </form>
+  <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-top:16px;">Accepting creates or links your ClaimHub identity and binds it to this case membership. Access remains limited to claimant-authorised scopes.</p>
+  {% endif %}
+</main>
+{% endblock %}

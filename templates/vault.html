@@ -1,0 +1,71 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}Document vault{% endblock %}
+{% block content %}
+{% set active = 'vault' %}
+{% include '_workspace_nav.html' %}
+{% set module_kicker = 'Evidence workspace' %}
+{% set module_title = 'My documents' %}
+{% set module_description = 'Keep policy wording, medical evidence, employer records, payslips and insurer correspondence in one indexed claim file.' %}
+{% include 'claimbuddy/_module_header.html' %}
+
+<div class="ra-grid-2" style="align-items:start;">
+  <div class="ac-panel">
+    <h2>Upload document</h2>
+    <form method="post" enctype="multipart/form-data">
+      <div class="field">
+        <label>Files</label>
+        <input type="file" name="files" multiple required>
+      </div>
+      <div class="field">
+        <label>Document type</label>
+        <select name="doc_type">
+          <option value="auto" selected>Guess from filename</option>
+          {% for t in doc_types %}
+          <option value="{{ t }}">{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <input name="notes" placeholder="e.g. rejection letter page 2">
+      </div>
+      <button type="submit" class="ac-btn ac-ac-btn-primary">Upload</button>
+    </form>
+  </div>
+
+  <div class="ac-panel">
+    <h2>Vault index ({{ documents|length }})</h2>
+    {% if documents %}
+    <div class="ac-table-wrap">
+      <table class="ac-table">
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in documents %}
+          <tr>
+            <td>{{ d.original_name }}</td>
+            <td>{{ d.doc_type }}</td>
+            <td>{{ d.uploaded_at[:10] }}</td>
+            <td>
+              <form method="post" action="{{ url_for('delete_document', doc_id=d.id) }}" style="display:inline;">
+                <button type="submit" class="ac-btn ac-ac-btn-danger"
+                  style="padding:0.25rem 0.55rem;font-size:0.75rem;">Remove</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="ac-meta">No documents yet. Upload policy, medical records, rejection letters, payslips.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,164 @@
+{# Shared functional-capacity builder — keep in sync for intake embed and standalone module. #}
+<div id="functional-map-placeholder" class="functional-map-placeholder"{% if fc_view and fc_view.has_occupation %} hidden{% endif %}>
+  <strong>Functional map not loaded yet</strong>
+  <p>
+    Complete your
+    {% if claim is defined and claim %}
+    <a href="{{ url_for('edit_claim', claim_id=claim.id) }}#section-occupation">occupation profile</a>
+    {% else %}
+    occupation profile in intake
+    {% endif %}
+    and accept an ESCO profile — your role’s functional areas appear here and feed the duty-impact matrix.
+  </p>
+  {% if claim is defined and claim %}
+  <a href="{{ url_for('edit_claim', claim_id=claim.id) }}#section-occupation" class="ac-btn ac-btn-secondary ac-btn-small">Go to occupation →</a>
+  {% endif %}
+</div>
+
+<div id="functional-duty-map" class="functional-duty-map"{% if not fc_view or not fc_view.has_occupation %} hidden{% endif %}>
+  <div class="means-box-header">Step A — Functional map (from your occupation)</div>
+  <p id="functional-map-intro" class="functional-map-intro"></p>
+  <div id="functional-map-grid" class="functional-map-grid"></div>
+  <p class="functional-map-note">
+    Tap a card or <strong>illness link</strong> — opens the functional-capacity builder with that area pre-selected.
+  </p>
+</div>
+
+<section class="illness-phase-panel functional-capacity-bridge{% if fc_embedded %} functional-capacity-embedded{% endif %}" data-phase-panel="bridge">
+  <h3 class="illness-phase-title">Functional-capacity builder — duty-impact matrix</h3>
+  <p class="illness-phase-desc">
+    Step B — Build your matrix: functional area → symptom → material duty blocked.
+    Matches the product <em>functional-capacity builder</em> — each row is evidence insurers need.
+  </p>
+
+  <div id="duty-impact-matrix" class="duty-impact-matrix">
+    <div class="duty-impact-matrix-head">
+      <strong>Duty-impact matrix</strong>
+      <span class="label-tag tag-functional">functional lane</span>
+    </div>
+    <p class="duty-impact-matrix-lead">Rows added from links below — synced to your claim pack and health story.</p>
+    <div class="duty-impact-matrix-table-wrap">
+      <table class="duty-impact-matrix-table" aria-label="Duty impact matrix">
+        <thead>
+          <tr>
+            <th>Functional area</th>
+            <th>Symptom</th>
+            <th>Material duty blocked</th>
+          </tr>
+        </thead>
+        <tbody id="duty-impact-matrix-body"></tbody>
+      </table>
+    </div>
+    <p id="duty-impact-matrix-empty" class="duty-impact-matrix-empty">No duty links yet — complete the three steps below.</p>
+  </div>
+
+  <nav class="bridge-step-nav" aria-label="Work bridge steps">
+    <button type="button" class="bridge-step-tab is-active" data-bridge-step="0">
+      <span class="bridge-step-num">1</span> Functional area
+    </button>
+    <button type="button" class="bridge-step-tab" data-bridge-step="1">
+      <span class="bridge-step-num">2</span> Symptom
+    </button>
+    <button type="button" class="bridge-step-tab" data-bridge-step="2">
+      <span class="bridge-step-num">3</span> Duty &amp; link
+    </button>
+  </nav>
+
+  <div id="bridge-coach" class="bridge-coach" aria-live="polite"></div>
+
+  <div class="bridge-screens">
+    <section class="bridge-screen is-active" data-bridge-screen="0">
+      <h4 class="bridge-screen-title">1. Which functional area is affected?</h4>
+      <p class="illness-phase-desc">Pick from the <strong>functional map above</strong> (best), or use the dropdown. Same six areas as your occupation profile.</p>
+      <div class="field">
+        <label for="bridge-domain">Functional area</label>
+        <select id="bridge-domain">
+          <option value="">— select —</option>
+          {% for d in illness_domains %}
+          <option value="{{ d.id }}" data-illness-link="{{ d.illness_link }}">{{ d.icon }} {{ d.label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <p class="field-hint" id="bridge-domain-hint"></p>
+      <div id="bridge-functional-crossover" class="bridge-crossover bridge-crossover-map" hidden>
+        <div class="bridge-crossover-head">
+          <strong>From your functional map</strong>
+          <span id="bridge-functional-crossover-label" class="bridge-crossover-label"></span>
+        </div>
+        <p class="bridge-crossover-lead">Illness links for this area — tap to carry into symptom step:</p>
+        <div id="bridge-functional-crossover-chips" class="illness-symptom-picker-chips bridge-crossover-chips"></div>
+        <p id="bridge-functional-crossover-duties" class="bridge-crossover-meta"></p>
+      </div>
+    </section>
+
+    <section class="bridge-screen" data-bridge-screen="1" hidden>
+      <h4 class="bridge-screen-title">2. Which symptom or limitation applies?</h4>
+      <p class="illness-phase-desc">Select from your health story, functional-map links, or condition-related suggestions — or type your own. Manual entries sync back to your story.</p>
+      <div class="field bridge-selected-field bridge-symptom-selected">
+        <label for="bridge-symptom">Selected symptom / limitation</label>
+        <input type="text" id="bridge-symptom" placeholder="Pick below or type — e.g. brain fog, panic before meetings…" autocomplete="off">
+        <p class="field-hint bridge-symptom-sync-hint">Typing here adds the symptom to your health story if it is not already captured.</p>
+        <div id="bridge-symptom-crosslinks" class="bridge-symptom-crosslinks" hidden>
+          <span class="bridge-crosslink-label">Cross-linked from</span>
+          <div id="bridge-symptom-crosslinks-list" class="bridge-crosslink-chips"></div>
+        </div>
+      </div>
+      <div id="bridge-illness-crossover" class="bridge-crossover bridge-crossover-illness" hidden>
+        <div class="bridge-crossover-head">
+          <strong>Functional map illness link</strong>
+          <span id="bridge-illness-crossover-label" class="bridge-crossover-label"></span>
+        </div>
+        <p class="bridge-crossover-lead">Carried from step 1 — tap to select:</p>
+        <div id="bridge-illness-crossover-chips" class="illness-symptom-picker-chips bridge-crossover-chips"></div>
+      </div>
+      <div class="illness-symptom-suggestions" id="illness-symptom-suggestions">
+        <span class="illness-picker-label">Previous &amp; condition-related symptoms</span>
+        <p class="illness-picker-hint field-hint">From onset, medical record, diagnoses, medications, and your story — grouped by source.</p>
+        <div id="illness-symptom-picker-chips" class="illness-symptom-picker-groups"></div>
+        <div class="illness-symptom-add-row">
+          <input type="text" id="bridge-symptom-custom" placeholder="Symptom not listed — add and select…">
+          <button type="button" class="ac-btn ac-btn-secondary ac-btn-small" id="bridge-symptom-custom-add">Add &amp; select</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="bridge-screen" data-bridge-screen="2" hidden>
+      <h4 class="bridge-screen-title">3. Which material duty does it block?</h4>
+      <p class="illness-phase-desc">From your job profile — tap a duty for this functional area, then add the link to your story.</p>
+      <div class="bridge-screen-recap" id="bridge-screen-recap" aria-live="polite"></div>
+      <div id="bridge-duty-crossover" class="bridge-crossover bridge-crossover-duty" hidden>
+        <div class="bridge-crossover-head">
+          <strong>Functional map duties</strong>
+          <span id="bridge-duty-crossover-label" class="bridge-crossover-label"></span>
+        </div>
+        <p class="bridge-crossover-lead">Material duties mapped to this area — tap to fill the duty field:</p>
+        <div id="bridge-duty-crossover-chips" class="illness-duty-chips bridge-crossover-chips"></div>
+      </div>
+      <div class="illness-duty-suggestions" id="illness-duty-suggestions">
+        <span class="illness-picker-label">All duty suggestions</span>
+        <div class="illness-duty-chips" id="illness-duty-chips"></div>
+      </div>
+      <div class="field bridge-selected-field">
+        <label for="bridge-duty">Selected material duty</label>
+        <input type="text" id="bridge-duty" placeholder="Pick above or type…">
+      </div>
+      <button type="button" class="ac-btn ac-btn-primary" id="illness-add-bridge">Add duty link to story</button>
+      <p class="field-hint bridge-extra-hint" id="bridge-extra-hint" hidden></p>
+      <ul id="illness-bridge-list" class="illness-bridge-list" aria-live="polite"></ul>
+    </section>
+  </div>
+
+  <footer class="bridge-step-footer">
+    <button type="button" class="ac-btn ac-btn-secondary" id="bridge-step-prev" disabled>← Previous</button>
+    <button type="button" class="ac-btn ac-btn-primary" id="bridge-step-next">Next →</button>
+  </footer>
+  <div class="illness-prompt-grid">
+    {% for card in illness_prompts if card.phase == 'bridge' %}
+    <button type="button" class="illness-prompt-card illness-lane-{{ card.lane }}" data-prompt-id="{{ card.id }}" data-phase="{{ card.phase }}" data-template="{{ card.template }}" data-fields='{{ card.fields | tojson }}' title="Open guided prompt">
+      <span class="illness-prompt-lane">{{ card.lane }}</span>
+      <strong>{{ card.title }}</strong>
+      <span class="illness-prompt-ph">{{ card.placeholder }}</span>
+    </button>
+    {% endfor %}
+  </div>
+</section>

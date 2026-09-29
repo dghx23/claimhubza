@@ -1,0 +1,130 @@
+/* ClaimHub design system — shared across marketing, resources, ClaimBuddy,
+   professional ClaimHub and the ClaimHub-specific Sentrix backend views. */
+:root{
+  --ch-navy-950:#0a2747;
+  --ch-navy-900:#0d3158;
+  --ch-navy-800:#123b70;
+  --ch-navy-700:#174d84;
+  --ch-blue-600:#0f67cf;
+  --ch-blue-500:#2d7fd8;
+  --ch-blue-100:#e8f3ff;
+  --ch-teal-600:#108b88;
+  --ch-teal-100:#e4faf6;
+  --ch-purple-600:#5c39e6;
+  --ch-purple-100:#efe9ff;
+  --ch-gold-500:#d39a2e;
+  --ch-red-500:#d95861;
+  --ch-green-600:#1a8f68;
+
+  --ch-ink:#17365f;
+  --ch-text:#405a74;
+  --ch-muted:#6f8093;
+  --ch-line:#dce6ef;
+  --ch-line-strong:#c7d7e5;
+  --ch-paper:#ffffff;
+  --ch-bg:#f5f9fc;
+  --ch-bg-soft:#f8fbfe;
+
+  --ch-radius-sm:8px;
+  --ch-radius-md:11px;
+  --ch-radius-lg:14px;
+  --ch-radius-xl:18px;
+  --ch-shadow-sm:0 5px 16px rgba(21,41,66,.04);
+  --ch-shadow-md:0 8px 24px rgba(16,48,86,.055);
+  --ch-shadow-lg:0 14px 34px rgba(18,68,128,.10);
+
+  --ch-space-1:4px;
+  --ch-space-2:8px;
+  --ch-space-3:12px;
+  --ch-space-4:16px;
+  --ch-space-5:20px;
+  --ch-space-6:24px;
+  --ch-space-8:32px;
+
+  --ch-page:1480px;
+  --ch-content:1240px;
+}
+
+html,body{background:linear-gradient(180deg,#f9fbfe 0%,var(--ch-bg) 100%)!important;color:var(--ch-ink)}
+.cs-poster-page,.cs-res-poster-page,.ch-page,.cb-main,.chr-main{width:min(var(--ch-page),100%)!important;margin-left:auto!important;margin-right:auto!important}
+.ch-page,.cb-main,.chr-main{padding-left:24px!important;padding-right:24px!important}
+
+.cs-nav{height:76px!important;padding:0 28px!important;border-color:var(--ch-line)!important;box-shadow:0 3px 14px rgba(18,44,76,.045)!important}
+.cs-brand strong{color:var(--ch-navy-900)!important}
+.cs-brand small{color:var(--ch-muted)!important}
+.cs-nav nav a{color:#566b80!important}
+.cs-nav nav a:hover{background:#f1f6fa!important;color:var(--ch-navy-800)!important}
+.cs-nav nav a.is-active{color:var(--ch-blue-600)!important}
+.cs-nav .cs-nav-primary{background:var(--ch-navy-900)!important;color:#fff!important;border-radius:var(--ch-radius-sm)!important}
+.cs-nav .cs-nav-primary:hover{background:var(--ch-navy-800)!important;color:#fff!important}
+
+.cs-footer{border-color:var(--ch-line)!important;background:#fff!important;color:var(--ch-muted)!important}
+.cs-footer strong{color:var(--ch-ink)!important}
+.cs-footer a{color:#315f88!important}
+
+.cs-kicker,.cb-kicker,.ch-kicker,.sx-kicker{color:var(--ch-blue-600)!important}
+.cs-btn,.cb-btn,.ch-form button,.ac-btn{border-radius:var(--ch-radius-sm)!important}
+.cs-btn-primary,.cb-btn-primary,.ch-form button{background:var(--ch-blue-600)!important;border-color:var(--ch-blue-600)!important;color:#fff!important}
+.cs-btn-primary:hover,.cb-btn-primary:hover,.ch-form button:hover{background:#0c5caf!important;border-color:#0c5caf!important}
+
+.cs-poster-row,.cs-res-numbered,.ch-panel,.ch-stat,.ch-workspace-card,.cb-claim-card,.cb-module-card,.cb-upload-card,.cb-info-card,.cb-app .ac-panel,.chr-app .card,.chr-app .ac-panel,.chr-app .ref-card,.chr-app .term-detail-card{
+  border-color:var(--ch-line)!important;
+  border-radius:var(--ch-radius-lg)!important;
+  box-shadow:var(--ch-shadow-sm)!important;
+}
+.cs-poster-row,.cs-res-numbered{background:linear-gradient(180deg,var(--ch-bg-soft),#f1f6fa)!important}
+.ch-panel,.ch-stat,.ch-workspace-card,.cb-claim-card,.cb-module-card,.cb-upload-card,.cb-info-card,.cb-app .ac-panel,.chr-app .card,.chr-app .ac-panel,.chr-app .ref-card,.chr-app .term-detail-card{background:var(--ch-paper)!important}
+
+.cs-poster-row-label h2,.cs-res-numbered-head h2,.ch-main-head h1,.ch-panel-head h2,.cb-section-head h2,.cb-module-head h1,.chr-app h1,.chr-app h2{color:var(--ch-ink)!important}
+.cs-poster-row-label p,.cs-res-numbered-head p,.ch-panel-body p,.ch-main-head p,.cb-section-head p,.cb-module-head p,.chr-app p{color:var(--ch-muted)}
+
+.cs-poster-number,.cb-path span{background:var(--ch-navy-900)!important;color:#fff!important}
+.ch-status{border-radius:999px!important}
+.ch-scope,.cb-trust-row span{border-color:#d3e3f1!important;background:#edf5fb!important;color:#43617e!important}
+
+.cb-productbar,.ch-productbar,.chr-productbar{
+  min-height:58px!important;
+  padding:8px 28px!important;
+  border-color:var(--ch-line)!important;
+  box-shadow:0 4px 14px rgba(18,48,82,.04)!important;
+}
+.cb-productmark{background:var(--ch-purple-100)!important;color:var(--ch-purple-600)!important}
+.ch-productmark{background:var(--ch-blue-100)!important;color:var(--ch-blue-600)!important}
+.chr-productmark{background:var(--ch-teal-100)!important;color:var(--ch-teal-600)!important}
+
+.cb-workspace-rail,.ch-side,.cb-app .cb-intake-form .intake-step-nav{background:linear-gradient(180deg,var(--ch-navy-800),var(--ch-navy-950))!important}
+.cb-workspace-rail .workspace-nav a.is-active,.ch-side a.active,.ch-side a:hover,.cb-app .cb-intake-form .intake-step-tab.is-active{background:var(--ch-blue-600)!important}
+
+.cb-module-purple:before,.cb-productmark{--module-accent:var(--ch-purple-600)}
+.cb-module-blue:before,.cb-module-navy:before{background:var(--ch-blue-600)!important}
+.cb-module-teal:before{background:var(--ch-teal-600)!important}
+.cb-module-gold:before{background:var(--ch-gold-500)!important}
+.cb-module-red:before{background:var(--ch-red-500)!important}
+
+.ch-workspace-card:before{background:var(--ch-blue-600)!important}
+.ch-workspace-card.employer:before{background:var(--ch-teal-600)!important}
+.ch-workspace-card.adviser:before{background:var(--ch-purple-600)!important}
+.ch-workspace-card.reviewer:before{background:var(--ch-blue-600)!important}
+
+.cb-home-hero,.ch-hero,.cb-module-head,.chr-app .hero,.chb-shell .sx-essay{
+  background:linear-gradient(105deg,#fff,#f5f9fd)!important;
+  border:1px solid var(--ch-line)!important;
+  border-radius:var(--ch-radius-xl)!important;
+  box-shadow:var(--ch-shadow-md)!important;
+}
+.cb-home-hero h1,.ch-hero h1,.cb-module-head h1,.chr-app .hero h1{color:var(--ch-ink)!important}
+
+input,select,textarea{border-radius:var(--ch-radius-sm)}
+.cb-app input,.cb-app select,.cb-app textarea,.ch-form input,.ch-form select,.chr-app input,.chr-app select,.chr-app textarea{
+  border-color:var(--ch-line-strong)!important;
+}
+.cb-app input:focus,.cb-app select:focus,.cb-app textarea:focus,.ch-form input:focus,.ch-form select:focus,.chr-app input:focus,.chr-app select:focus,.chr-app textarea:focus{
+  outline:2px solid rgba(15,103,207,.14)!important;
+  border-color:#8ebbe3!important;
+}
+
+@media(max-width:900px){
+  .ch-page,.cb-main,.chr-main{padding-left:14px!important;padding-right:14px!important}
+  .cs-nav{padding:0 14px!important}
+  .cb-productbar,.ch-productbar,.chr-productbar{padding:8px 14px!important}
+}

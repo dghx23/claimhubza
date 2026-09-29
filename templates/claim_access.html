@@ -1,0 +1,114 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}Share access — ClaimBuddy{% endblock %}
+{% block content %}
+{% set active = 'access' %}
+{% include '_workspace_nav.html' %}
+{% set module_kicker = 'Claimant-controlled collaboration' %}
+{% set module_title = 'Share access' %}
+{% set module_description = 'Invite a clinician, employer or HR contact, adviser, or claims reviewer into ClaimHub. You choose the role, the information scope and the individual documents they can see.' %}
+{% include 'claimbuddy/_module_header.html' %}
+
+{% if invite_url %}
+<section class="cb-share-ready">
+  <div>
+    <p class="cb-kicker">Invitation ready</p>
+    <h2>Copy this link and send it to the participant.</h2>
+    <p class="cb-share-token">{{ invite_url }}</p>
+  </div>
+  <p>The raw invitation token is shown once. ClaimHub stores only its hash.</p>
+</section>
+{% endif %}
+
+<div class="cb-share-grid">
+  <section class="ac-panel">
+    <div class="cb-panel-title">
+      <div><p class="cb-kicker">New participant</p><h2>Create an invitation</h2></div>
+      <span>Expires in 7 days</span>
+    </div>
+
+    <form method="post" class="cb-share-form">
+      <div class="ra-grid-2">
+        <div class="field">
+          <label for="email">Participant email</label>
+          <input id="email" name="email" type="email" placeholder="name@example.com" required>
+        </div>
+        <div class="field">
+          <label for="role">Role</label>
+          <select id="role" name="role" required>
+            <option value="">Choose a role</option>
+            {% for value, label in role_labels.items() %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="cb-share-section">
+        <div class="cb-share-section-head">
+          <div><h3>1. Choose what this role may see</h3><p>Only scopes permitted for the selected professional role can be activated.</p></div>
+        </div>
+        <div class="cb-scope-grid">
+          {% set all_scopes = namespace(items=[]) %}
+          {% for role, scopes in role_scopes.items() %}
+            {% for scope in scopes %}
+              {% if scope not in all_scopes.items %}{% set all_scopes.items = all_scopes.items + [scope] %}{% endif %}
+            {% endfor %}
+          {% endfor %}
+          {% for scope in all_scopes.items|sort %}
+          <label class="cb-check-card">
+            <input type="checkbox" name="scopes" value="{{ scope }}">
+            <span><strong>{{ scope|replace('case.','')|replace('_',' ')|replace('.',' ')|title }}</strong><small>{{ scope }}</small></span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="cb-share-section">
+        <div class="cb-share-section-head">
+          <div><h3>2. Choose the documents</h3><p>Document access is separate from the general case scope.</p></div>
+        </div>
+        {% if documents %}
+        <div class="cb-document-share-list">
+          {% for doc in documents %}
+          <label class="cb-check-card cb-document-check">
+            <input type="checkbox" name="documents" value="{{ doc.id }}">
+            <span><strong>{{ doc.original_name }}</strong><small>{{ doc.doc_type|replace('_',' ')|title }} · {{ doc.uploaded_at[:10] }}</small></span>
+          </label>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="cb-empty-note">There are no uploaded documents to share yet.</p>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="cb-btn cb-btn-solid">Create ClaimHub invitation</button>
+    </form>
+  </section>
+
+  <aside>
+    <section class="ac-panel">
+      <div class="cb-panel-title">
+        <div><p class="cb-kicker">Current access</p><h2>Invitations</h2></div>
+        <span>{{ invitations|length }}</span>
+      </div>
+      {% if invitations %}
+      <ul class="cb-invite-list">
+        {% for item in invitations %}
+        <li>
+          <span class="cb-invite-dot"></span>
+          <div><strong>{{ item.email }}</strong><small>{{ item.role|replace('_',' ')|title }}</small></div>
+          <span class="cb-invite-status">{{ item.status }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="cb-empty-note">No ClaimHub invitations have been created for this claim.</p>
+      {% endif %}
+    </section>
+
+    <section class="ac-panel" style="margin-top:12px;">
+      <p class="cb-kicker">Important</p>
+      <h2>Your record stays yours</h2>
+      <p class="ac-meta">A professional can respond, confirm facts or provide source evidence within their authorised view. They do not take ownership of, or rewrite, your claimant narrative.</p>
+    </section>
+  </aside>
+</div>
+{% endblock %}

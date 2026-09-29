@@ -1,0 +1,133 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}Functional capacity{% endblock %}
+{% block content %}
+{% set active = 'functional' %}
+{% include '_workspace_nav.html' %}
+
+<div class="ac-panel policy-reader-hero functional-module-hero" style="margin-bottom:1.25rem;">
+  <div class="policy-reader-hero-text">
+    <h1>Function &amp; duties</h1>
+    <p class="policy-reader-lead">
+      Map symptoms and limitations to the material duties of your actual occupation. This is the bridge between the medical story and the policy's disability test.
+    </p>
+    {% if fc_view.row_count %}
+    <p class="policy-reader-meta">
+      <strong>{{ fc_view.row_count }} duty link{{ 's' if fc_view.row_count != 1 else '' }}</strong>
+      {% if fc_view.occupation_title %} · {{ fc_view.occupation_title }}{% endif %}
+    </p>
+    {% else %}
+    <p class="policy-reader-meta policy-reader-meta--empty">No duty links yet — use the builder below.</p>
+    {% endif %}
+  </div>
+  <div class="policy-reader-actions">
+    <a href="{{ url_for('edit_claim', claim_id=claim.id) }}#section-health-story" class="ac-btn">Health story
+      (intake)</a>
+    <a href="{{ url_for('pack', claim_id=claim.id) }}" class="ac-btn">Claim pack preview</a>
+  </div>
+</div>
+
+<div class="ac-panel functional-module-sync-note" style="margin-bottom:1.25rem;">
+  <p class="field-hint" style="margin:0;">
+    <strong>Synced fields:</strong> duty-impact matrix rows and linked paragraphs in your illness story.
+    Edit here or in intake — both stay aligned.
+    <span id="functional-sync-status" class="functional-sync-status" aria-live="polite"></span>
+  </p>
+</div>
+
+<form id="functional-capacity-form" class="functional-capacity-form">
+  <input type="hidden" name="occupation_profile_json" id="occupation_profile_json"
+    value="{{ claim.occupation_profile_json if claim.occupation_profile_json else '' }}">
+  <input type="hidden" name="functional_capacity_json" id="functional_capacity_json"
+    value="{{ claim.functional_capacity_json if claim.functional_capacity_json else '' }}">
+  <input type="hidden" name="medical_diagnoses_json" id="medical_diagnoses_json"
+    value="{{ claim.medical_diagnoses_json if claim.medical_diagnoses_json else '' }}">
+  <input type="hidden" name="medical_medications_json" id="medical_medications_json"
+    value="{{ claim.medical_medications_json if claim.medical_medications_json else '' }}">
+  <textarea name="material_duties" id="material_duties" hidden
+    aria-hidden="true">{{ claim.material_duties if claim.material_duties else '' }}</textarea>
+  <textarea name="illness_summary" id="illness_summary" hidden
+    aria-hidden="true">{{ claim.illness_summary if claim.illness_summary else '' }}</textarea>
+
+  <div id="illness-story-panel" class="illness-story-panel functional-capacity-panel">
+    <div class="illness-builder-layout">
+      <div class="illness-builder-main">
+        {% set fc_embedded = false %}
+        {% include '_functional_capacity_builder.html' %}
+      </div>
+
+      <aside class="illness-builder-side functional-capacity-side">
+        <div class="illness-side-card">
+          <strong>Functional areas</strong>
+          <p class="illness-side-lead">Tap to open the capacity builder on that area.</p>
+          <ul class="illness-domain-ref-list">
+            {% for d in illness_domains %}
+            <li>
+              <button type="button" class="illness-domain-ref-btn" data-domain-id="{{ d.id }}"
+                data-illness-link="{{ d.illness_link }}">
+                <span>{{ d.icon }}</span> <strong>{{ d.label }}</strong>
+                <span class="illness-domain-ref-hint">{{ d.illness_link }}</span>
+              </button>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="illness-side-card" id="duty-impact-matrix-side" hidden>
+          <strong>Matrix preview</strong>
+          <ul id="duty-impact-matrix-side-list" class="duty-impact-side-list"></ul>
+        </div>
+        {% if fc_view.statement %}
+        <div class="illness-side-card">
+          <strong>Claim-pack statement</strong>
+          <pre class="functional-statement-preview">{{ fc_view.statement }}</pre>
+        </div>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+</form>
+
+<script type="application/json" id="illness-story-config">
+  {{ {
+    "phase_coaching": phase_coaching,
+    "story_examples": story_examples,
+    "domains": illness_domains,
+    "ladder_lanes": ["everyday", "medical", "functional", "policy"],
+    "symptom_definitions": symptom_definitions,
+    "story_types": story_types,
+    "standalone_functional": true
+  } | tojson }}
+</script>
+<script type="application/json" id="functional-capacity-config">
+  {{ {
+    "claim_id": claim.id,
+    "save_url": url_for('api_functional_capacity', claim_id=claim.id),
+    "initial_domain": request.args.get('domain', '')
+  } | tojson }}
+</script>
+
+<div id="illness-prompt-backdrop" class="modal-backdrop" hidden></div>
+<div id="illness-prompt-modal" class="job-spec-modal illness-prompt-modal" role="dialog" aria-modal="true"
+  aria-labelledby="illness-prompt-title" hidden>
+  <div class="job-spec-modal-inner">
+    <header class="job-spec-modal-header">
+      <h2 id="illness-prompt-title">Add to your story</h2>
+      <button type="button" class="modal-close" id="illness-prompt-close" aria-label="Close">×</button>
+    </header>
+    <p class="job-spec-modal-lead" id="illness-prompt-lead"></p>
+    <div id="illness-prompt-fields" class="illness-prompt-fields"></div>
+    <p class="illness-prompt-preview-label">Preview</p>
+    <p id="illness-prompt-preview" class="illness-prompt-preview-text"></p>
+    <footer class="job-spec-modal-footer">
+      <button type="button" class="ac-btn" id="illness-prompt-cancel">Cancel</button>
+      <button type="button" class="ac-btn ac-ac-btn-primary" id="illness-prompt-add">Add to story</button>
+    </footer>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/term-tooltips.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/functional-map-bootstrap.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/illness-story.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/functional-capacity-sync.js') }}" defer></script>
+{% endblock %}

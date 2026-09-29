@@ -1,0 +1,14 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}Claim {{ claim.id }} · ClaimBuddy{% endblock %}
+{% block content %}
+<section class="cb-home-section">
+  <p class="cb-kicker">Your claim workspace</p>
+  <h1>{{ claim.claimant_name or 'Claim file' }}</h1>
+  <p>{{ stage_label }}{% if claim.insurer %} · {{ claim.insurer }}{% endif %}</p>
+  <p>This private beta workspace shows your claim summary and evidence checklist. Document upload, editing and professional invitation are awaiting production identity and storage.</p>
+  <h2>Evidence checklist</h2>
+  <ul>{% for item in checklist %}<li>{{ item.label if item.label is defined else item }}</li>{% endfor %}</ul>
+  <h2>Documents</h2>
+  <ul>{% for document in documents %}<li>{{ document.original_name }}</li>{% else %}<li>No documents added yet.</li>{% endfor %}</ul>
+</section>
+{% endblock %}

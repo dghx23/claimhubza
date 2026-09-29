@@ -1,0 +1,78 @@
+{% extends "claimhub/base.html" %}
+{% block title %}{{ role_meta.title }} — ClaimHub{% endblock %}
+{% block body %}
+<div class="ch-shell">
+  <aside class="ch-side">
+    <div class="ch-side-title">
+      <strong>{{ workspace_label }}</strong>
+      <small>{{ role_meta.title }}</small>
+    </div>
+    <nav>
+      <a class="active" href="{{ url_for('claimhub.role_home', role=role) }}">Dashboard</a>
+      <a href="#cases">My cases</a>
+      <a href="#requests">Requests</a>
+      <a href="#documents">Documents</a>
+      <a href="#activity">Activity</a>
+      {% if claimhub_user %}<a href="{{ url_for('claimhub.logout') }}">Sign out</a>{% endif %}
+    </nav>
+  </aside>
+
+  <main class="ch-main">
+    <header class="ch-main-head">
+      <div>
+        <p class="ch-kicker">ClaimHub · {{ workspace_label }}</p>
+        <h1>{% if claimhub_user %}Welcome, {{ claimhub_user.display_name or claimhub_user.email }}{% else %}{{ role_meta.title }}{% endif %}</h1>
+        <p>{{ role_meta.summary }}</p>
+      </div>
+      <span class="ch-status pending">{% if claimhub_user %}Private beta{% else %}Invite required{% endif %}</span>
+    </header>
+
+    <section class="ch-stats">
+      <div class="ch-stat"><strong>{{ cases|length if claimhub_user else '—' }}</strong><span>My cases</span></div>
+      <div class="ch-stat"><strong>Scoped</strong><span>Access model</span></div>
+      <div class="ch-stat"><strong>Audited</strong><span>Case activity</span></div>
+      <div class="ch-stat"><strong>{{ role|replace('_',' ')|title }}</strong><span>Workspace role</span></div>
+    </section>
+
+    <div class="ch-content-grid">
+      <div>
+        <section class="ch-panel" id="cases">
+          <div class="ch-panel-head"><h2>My cases</h2><span>{{ cases|length if claimhub_user else 0 }}</span></div>
+          <div class="ch-panel-body">
+            {% if cases %}
+            <ul class="ch-list">
+              {% for item in cases %}
+              <li>
+                <span class="ch-dot"></span>
+                <div><strong>{{ item.claim_reference or item.policy_number or ('Case ' ~ item.claim_id) }}</strong><small>{{ item.claimant_name or 'Claimant' }}{% if item.insurer %} · {{ item.insurer }}{% endif %}</small></div>
+                <a href="{{ url_for('claimhub.workspace', role=role, claim_id=item.claim_id) }}">Open →</a>
+              </li>
+              {% endfor %}
+            </ul>
+            {% elif claimhub_user %}
+            <div class="ch-empty">No active cases are assigned to this role.</div>
+            {% else %}
+            <div class="ch-empty">Use a ClaimHub invitation link to connect your professional identity to a case.</div>
+            {% endif %}
+          </div>
+        </section>
+      </div>
+
+      <aside>
+        <section class="ch-panel">
+          <div class="ch-panel-head"><h2>Workspace purpose</h2><span>{{ role|replace('_',' ')|title }}</span></div>
+          <div class="ch-panel-body">
+            <p>{{ role_meta.focus|join(' · ') }}.</p>
+          </div>
+        </section>
+        <section class="ch-panel" style="margin-top:16px;">
+          <div class="ch-panel-head"><h2>Connected to ClaimBuddy</h2><span>Claimant-owned record</span></div>
+          <div class="ch-panel-body">
+            <p>The claimant works in ClaimBuddy. This workspace receives only the case information authorised for this role.</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>
+{% endblock %}

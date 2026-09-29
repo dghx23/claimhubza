@@ -1,0 +1,14 @@
+/* ClaimHub-specific Sentrix backend styling.
+   Keeps the internal control room visually related to the public ClaimHub system
+   while retaining the Sentrix backend shell and authentication boundary. */
+.chb-shell .sx-essay{padding:1.2rem 1.35rem;border:1px solid #dce6ef;border-radius:14px;background:linear-gradient(105deg,#fff,#f5f9fd);box-shadow:0 7px 20px rgba(21,41,66,.045)}
+.chb-shell .sx-essay .sx-kicker{color:#0f67cf}.chb-shell .sx-essay h1{color:#17365f;letter-spacing:-.035em}
+.chb-shell .compiler-stat-row{gap:.65rem}.chb-shell .compiler-stat{border:1px solid #dce6ef;border-radius:11px;background:#fff;box-shadow:0 6px 18px rgba(21,41,66,.04)}.chb-shell .compiler-stat strong{color:#17365f}
+.chb-shell .sx-squares{gap:.7rem}.chb-shell .sx-squares>a{border:1px solid #dce6ef;border-radius:12px;background:#fff;box-shadow:0 6px 18px rgba(21,41,66,.04)}.chb-shell .sx-squares>a:hover{border-color:#abc9e2;background:#f8fbfe}.chb-shell .sx-squares .sx-kicker{color:#0f67cf}
+.chb-shell .ac-panel{border:1px solid #dce6ef!important;border-radius:12px!important;background:#fff!important;box-shadow:0 6px 18px rgba(21,41,66,.04)!important}
+.chb-shell .ac-panel h2{color:#17365f}.chb-shell .ac-btn{border-radius:8px!important}
+.chb-shell .ac-table th{background:#f3f8fc!important;color:#435d76}.chb-shell .ac-table tr:hover td{background:#fbfdff}
+.chb-shell code{background:#eef4f8;color:#334d66;border-radius:5px;padding:.15rem .3rem}
+.chb-shell a{color:#145fa9}
+.chb-shell .chb-section-card{padding:.8rem;border:1px solid #dce6ef;border-radius:10px;background:#f9fbfd}
+.chb-shell .chb-section-card strong{color:#17365f}

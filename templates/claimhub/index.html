@@ -1,0 +1,69 @@
+{% extends "claimhub/base.html" %}
+{% block title %}ClaimHub — professional claims coordination{% endblock %}
+{% block body %}
+<main class="ch-page">
+  <section class="ch-hero">
+    <div>
+      <p class="kicker">Professional claims coordination · South Africa</p>
+      <h1>Different ways in. One shared claim.</h1>
+      <p>ClaimHub gives clinicians, employers, advisers and claims teams a role-specific view of the same case. ClaimBuddy remains the claimant-facing side so the claimant stays visible in the process regardless of who initiated the case.</p>
+    </div>
+    <div class="ch-hero-badge">
+      <strong>ClaimHub</strong>
+      <span>claimhub.co.za</span>
+      <span>Role membership · claimant-authorised scope · document sharing</span>
+    </div>
+  </section>
+
+  <section class="ch-panel" style="margin-top:18px;">
+    <div class="ch-panel-head"><h2>How a case can start</h2><span>One shared record</span></div>
+    <div class="ch-panel-body">
+      <div class="ch-initiation-grid">
+        {% for path in product_model.initiation_paths %}
+        <div class="ch-initiation-card">
+          <span>{{ path.label }}</span>
+          <strong>{{ path.title }}</strong>
+          <p>{{ path.summary }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      <p class="ch-subtle" style="margin-top:12px;">Private beta note: claimant-led workspace creation and professional invitation acceptance are implemented. Automated professional-led creation plus authenticated claimant activation is still being completed.</p>
+    </div>
+  </section>
+
+  <section class="ch-workspace-grid">
+    {% for workspace in product_model.claimhub_workspaces %}
+    <a class="ch-workspace-card {{ workspace.role }}" href="{{ url_for('claimhub.role_home', role=workspace.role) }}">
+      <span class="eyebrow">{{ workspace.label }} workspace</span>
+      <h2>{{ workspace.label }}</h2>
+      <p>{{ workspace.summary }}</p>
+      <span class="open">Open workspace →</span>
+    </a>
+    {% endfor %}
+  </section>
+
+  <section class="ch-claimbuddy-strip">
+    <div>
+      <strong>ClaimBuddy</strong>
+      <small>by claimhub.co.za · claimant experience</small>
+    </div>
+    <div style="color:#6754a7;font-size:13px;">{{ product_model.principles.claimant_visibility }}</div>
+    <a href="{{ url_for('inbox') }}">Open ClaimBuddy</a>
+  </section>
+
+  <section class="ch-bottom-grid">
+    <div class="ch-panel">
+      <div class="ch-panel-head"><h2>One case boundary</h2><span>Claimant-controlled</span></div>
+      <div class="ch-panel-body">
+        <p>{{ product_model.principles.access }}</p>
+      </div>
+    </div>
+    <div class="ch-panel">
+      <div class="ch-panel-head"><h2>Reference intelligence</h2><span>RiskAtlas</span></div>
+      <div class="ch-panel-body">
+        <p>{{ product_model.principles.riskatlas }}</p>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

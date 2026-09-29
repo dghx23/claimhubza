@@ -1,0 +1,32 @@
+<ul class="checklist checklist--linked">
+  {% for item in checklist %}
+  <li class="policy-checklist-item {% if item.done %}done{% else %}pending{% endif %}">
+    <span class="policy-checklist-mark" aria-hidden="true">{% if item.done %}✓{% else %}○{% endif %}</span>
+    <span class="policy-checklist-body">
+      <a
+        href="{{ url_for('resources_glossary_detail', slug=item.slug) }}"
+        class="policy-checklist-label has-term-tip"
+        data-term-tip="{{ item.hover_tip }}"
+        data-term-tip-href="{{ url_for('resources_glossary_detail', slug=item.slug) }}"
+      >{{ item.label }}</a>
+      <div class="policy-checklist-links">
+        <a href="{{ url_for('resources_glossary_detail', slug=item.slug) }}">Glossary</a>
+        {% for link in item.language_links[:2] %}
+        · <a href="{{ url_for('resources_language_term', slug=link.slug) }}">{{ link.label }}</a>
+        {% endfor %}
+        {% if claim and item.module_links[:1] %}
+        {% set mod = item.module_links[0] %}
+        ·
+        {% if mod.claim_scoped %}
+        <a href="{{ url_for(mod.endpoint, claim_id=claim.id) }}">{{ mod.label }}</a>
+        {% elif mod.fallback_endpoint %}
+        <a href="{{ url_for(mod.fallback_endpoint) }}">{{ mod.label }}</a>
+        {% else %}
+        <a href="{{ url_for(mod.endpoint) }}">{{ mod.label }}</a>
+        {% endif %}
+        {% endif %}
+      </div>
+    </span>
+  </li>
+  {% endfor %}
+</ul>

@@ -1,0 +1,163 @@
+{% extends "claimbuddy/base.html" %}
+{% block title %}ClaimBuddy South Africa — review-ready claim packs{% endblock %}
+{% block meta_description %}ClaimBuddy South Africa helps income-protection and disability claimants organise policy wording, medical evidence, employment records, timelines and evidence gaps.{% endblock %}
+{% block content %}
+
+<section class="cb-home-hero">
+  <div class="cb-home-copy">
+    <p class="cb-kicker">South Africa · Income protection and disability claims</p>
+    <h1>Build a claim file that holds together.</h1>
+    <p class="cb-home-lead">ClaimBuddy helps you organise policy wording, medical evidence, employer records, important dates and functional impact into one review-ready workspace.</p>
+    <div class="cb-home-actions">
+      <a href="{{ url_for('intake') }}" class="cb-btn cb-btn-primary">Start guided claim setup</a>
+      <a href="#upload" class="cb-btn cb-btn-light">I already have documents</a>
+    </div>
+    <div class="cb-trust-row">
+      <span>South Africa first</span>
+      <span>Claimant-controlled</span>
+      <span>POPIA-aware design</span>
+      <span>Human review required</span>
+    </div>
+  </div>
+  <aside class="cb-home-status">
+    <span class="cb-mini-label">What ClaimBuddy organises</span>
+    <strong>Policy → timeline → function → evidence → pack</strong>
+    <p>Your claim stays centred on the evidence and the policy test that actually applies.</p>
+  </aside>
+</section>
+
+{% if claims %}
+<section class="cb-home-section">
+  <div class="cb-section-head">
+    <div>
+      <p class="cb-kicker">Continue</p>
+      <h2>Your claim workspaces</h2>
+    </div>
+    <a href="{{ url_for('intake') }}" class="cb-text-link">Start another claim →</a>
+  </div>
+  <div class="cb-claim-grid">
+    {% for c in claims %}
+    <a class="cb-claim-card" href="{{ url_for('dashboard', claim_id=c.id) }}">
+      <div class="cb-claim-card-top">
+        <span class="cb-claim-stage">{{ c.stage_label or stage_labels.get(c.claim_stage, c.claim_stage) }}</span>
+        <span class="cb-claim-date">{{ (c.updated_at or '')[:10] }}</span>
+      </div>
+      <h3>{{ c.claimant_name or 'Claim file #' ~ c.id }}</h3>
+      <p>{{ c.employer or 'Employer not added' }}{% if c.insurer %} · {{ c.insurer }}{% endif %}</p>
+      <span class="cb-open-link">Open claim →</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="cb-home-section">
+  <div class="cb-section-head">
+    <div>
+      <p class="cb-kicker">The workspace</p>
+      <h2>One claim. Clear modules.</h2>
+      <p>Each module answers a different part of the same question: what does the policy require, what happened, how did your health affect your work, and what evidence is still missing?</p>
+    </div>
+  </div>
+
+  <div class="cb-module-grid">
+    <a class="cb-module-card cb-module-blue" href="{% if claims %}{{ url_for('dashboard', claim_id=claims[0].id) }}{% else %}{{ url_for('intake') }}{% endif %}">
+      <span class="cb-module-num">01</span>
+      <h3>My claim</h3>
+      <p>Stage, parties, important dates, chronology and the core claim story in one overview.</p>
+    </a>
+    <a class="cb-module-card cb-module-purple" href="{% if claims %}{{ url_for('policy_reader', claim_id=claims[0].id) }}{% else %}{{ url_for('intake') }}{% endif %}">
+      <span class="cb-module-num">02</span>
+      <h3>My policy</h3>
+      <p>Waiting period, disability definition, notice requirements, exclusions and policy wording snippets.</p>
+    </a>
+    <a class="cb-module-card cb-module-teal" href="{% if claims %}{{ url_for('functional_capacity', claim_id=claims[0].id) }}{% else %}{{ url_for('intake') }}{% endif %}">
+      <span class="cb-module-num">03</span>
+      <h3>Function & duties</h3>
+      <p>Map symptoms and limitations to the material duties your actual occupation requires.</p>
+    </a>
+    <a class="cb-module-card cb-module-gold" href="{% if claims %}{{ url_for('gaps', claim_id=claims[0].id) }}{% else %}{{ url_for('intake') }}{% endif %}">
+      <span class="cb-module-num">04</span>
+      <h3>Evidence gaps</h3>
+      <p>See what is missing, who holds it, how urgent it is and what to request next.</p>
+    </a>
+    <a class="cb-module-card cb-module-red" href="{% if claims %}{{ url_for('rejection_explainer', claim_id=claims[0].id) }}{% else %}{{ url_for('intake') }}{% endif %}">
+      <span class="cb-module-num">05</span>
+      <h3>Decision / rejection</h3>
+      <p>Break a rejection into reasons, dates, disputed facts and the evidence needed for review.</p>
+    </a>
+    <a class="cb-module-card cb-module-navy" href="{% if claims %}{{ url_for('pack', claim_id=claims[0].id) }}{% else %}{{ url_for('intake') }}{% endif %}">
+      <span class="cb-module-num">06</span>
+      <h3>Claim pack</h3>
+      <p>Compile the chronology, policy issues, functional evidence, gaps and draft letters into a review-ready pack.</p>
+    </a>
+  </div>
+</section>
+
+<section class="cb-home-section cb-path-section">
+  <div class="cb-section-head">
+    <div>
+      <p class="cb-kicker">How it works</p>
+      <h2>From scattered records to a review-ready pack</h2>
+    </div>
+  </div>
+  <div class="cb-path">
+    <div><span>1</span><strong>Upload & profile</strong><p>Policy, payslips, medical records, employer documents and correspondence.</p></div>
+    <div><span>2</span><strong>Build the timeline</strong><p>Symptom onset, Date of Absence, first certificate, first notice and key insurer events.</p></div>
+    <div><span>3</span><strong>Read the policy</strong><p>Identify the waiting period, disability test, notice requirements and other relevant wording.</p></div>
+    <div><span>4</span><strong>Map functional impact</strong><p>Connect symptoms and limitations to the material duties of the role.</p></div>
+    <div><span>5</span><strong>Close evidence gaps</strong><p>Identify missing records and who needs to provide them.</p></div>
+    <div><span>6</span><strong>Prepare the pack</strong><p>Review everything together before anything is sent or escalated.</p></div>
+  </div>
+</section>
+
+<section class="cb-home-section" id="upload">
+  <div class="cb-upload-layout">
+    <form method="post" action="{{ url_for('inbox') }}" enctype="multipart/form-data" class="cb-upload-card" id="compiler-drop">
+      <input type="hidden" name="jurisdiction" value="za">
+      <p class="cb-kicker">Quick start</p>
+      <h2>Already have documents?</h2>
+      <p>Drop what you have. Unsorted is fine. ClaimBuddy will create a South African claim workspace and you can correct classifications afterwards.</p>
+      <div class="cb-upload-fields">
+        <label>Your name <input type="text" name="claimant_name" placeholder="Optional"></label>
+        <label>Cover type
+          <select name="cover_type">
+            <option value="">Not sure yet</option>
+            {% for key, label in inbox_juris.cover_types %}
+            <option value="{{ key }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+      <input id="compiler-files" type="file" name="files" multiple>
+      <button type="submit" class="cb-btn cb-btn-primary">Create claim workspace</button>
+    </form>
+
+    <aside class="cb-info-card">
+      <p class="cb-kicker">South African context</p>
+      <h2>Built around the local claim journey</h2>
+      <ul>
+        <li>Date of Absence and waiting-period evidence</li>
+        <li>Employer-held records and job duties</li>
+        <li>Insurer claim-file and decision records</li>
+        <li>PAIA / POPIA record-access requests where relevant</li>
+        <li>Internal review and ombud escalation preparation</li>
+      </ul>
+      <p class="cb-small">ClaimBuddy organises and drafts. It does not submit claims, replace legal or medical judgment, or guarantee an outcome.</p>
+    </aside>
+  </div>
+</section>
+
+<section class="cb-home-section cb-function-banner">
+  <div>
+    <p class="cb-kicker">Core principle</p>
+    <h2>Function, not diagnosis.</h2>
+    <p>Diagnosis explains what is happening medically. Income-protection claims usually turn on what you can or cannot reliably do in the material duties of your occupation.</p>
+  </div>
+  <a href="{{ url_for('intake') }}" class="cb-btn cb-btn-light">Start with your claim story</a>
+</section>
+
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/compiler-inbox.js') }}" defer></script>
+{% endblock %}
