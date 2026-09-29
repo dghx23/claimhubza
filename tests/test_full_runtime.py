@@ -89,3 +89,16 @@ def test_other_browser_cannot_open_claimant_case(tmp_path, monkeypatch):
 
     outsider = app.test_client()
     assert outsider.get("/claim/1").status_code == 404
+
+def test_document_delete_requires_case_ownership(tmp_path, monkeypatch):
+    app = _app(tmp_path, monkeypatch)
+    owner = app.test_client()
+    owner.post("/inbox", data={"claimant_name": "Private Person"})
+    doc_id = db.add_document(1, "private.txt", "private.txt", "other")
+
+    outsider = app.test_client()
+    assert outsider.post(f"/documents/{doc_id}/delete").status_code == 404
+    assert any(doc["id"] == doc_id for doc in db.list_documents(1))
+
+    assert owner.post(f"/documents/{doc_id}/delete").status_code == 302
+    assert not db.list_documents(1)
